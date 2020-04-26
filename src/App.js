@@ -1,6 +1,10 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Route, Link} from "react-router-dom";
 
+import MicrochipList from "microchip-list.js";
+import EditMicrochip from "edit-microchip.js";
+import CreateMicrochip from "create-microchip.js";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class App extends Component {
