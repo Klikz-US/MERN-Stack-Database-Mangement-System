@@ -38,8 +38,8 @@ class App extends Component {
         </header>
 
         <Route path = "/" exact component = {MicrochipList}></Route>
-        <Route path = "/edit/:id" exact component = {EditMicrochip}></Route>
-        <Route path = "/register" exact component = {RegisterMicrochip}></Route>
+        <Route path = "/edit/:id" component = {EditMicrochip}></Route>
+        <Route path = "/register" component = {RegisterMicrochip}></Route>
       </Router>
     );
   }

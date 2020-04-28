@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import axios from "axios";
 
 export default class RegisterMicrochip extends Component {
     constructor(props) {
@@ -9,8 +10,8 @@ export default class RegisterMicrochip extends Component {
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
-            microchip_Number: "",
-            owner_Email: "",
+            microchip_Number: '',
+            owner_Email: ''
         };
     }
 
@@ -28,13 +29,20 @@ export default class RegisterMicrochip extends Component {
 
     onSubmit (e) {
         e.preventDefault();
+        const newMicrochip = {
+            microchip_Number: this.state.microchip_Number,
+            owner_Email: this.state.owner_Email
+        };
 
-        this.setState({
-            microchip_Number: e.target.value,
-            owner_Email: e.target.value
+        axios.post('http://localhost:4000/microchips/add', newMicrochip)
+        .then(res => {
+            console.log(res.data);
         });
 
-        console.log(this.state);
+        this.setState({
+            microchip_Number: '',
+            owner_Email: ''
+        });
     }
 
     render() {
