@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@availity/yup": "^3.0.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -10,12 +11,20 @@
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
     "cors": "^2.8.5",
+    "country-state-city": "^1.0.4",
     "express": "^4.17.1",
+    "formik": "^2.1.4",
+    "jquery": "^3.5.0",
+    "moment": "^2.24.0",
     "mongoose": "^5.9.10",
+    "popper": "^1.0.1",
     "react": "^16.13.1",
+    "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "typescript": "^3.8.3",
+    "yup": "^0.28.4"
   },
   "scripts": {
     "start": "react-scripts start",

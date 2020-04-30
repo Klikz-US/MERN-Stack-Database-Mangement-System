@@ -3,60 +3,67 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-const microchipRoutes = express.Router();
-const PORT = 4000;
-let Microchip = require('./microchip.model');
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/microchips', {
+mongoose.connect('mongodb://127.0.0.1:27017/stl', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 const connection = mongoose.connection;
-
 connection.once('open', function () {
     console.log("MongoDB Database connection established Successfully.");
 });
 
-microchipRoutes.route('/').get(function (req, res) {
-    Microchip.find(function (err, microchips) {
+const PORT = 4000;
+app.listen(PORT, function () {
+    console.log("Server is Running on PORT: " + PORT);
+});
+
+let petSchema = require('./register-pet.model');
+
+const petRoutes = express.Router();
+const userRoutes = express.Router();
+app.use('/pets', petRoutes);
+app.use('/users', userRoutes);
+
+petRoutes.route('/').get(function (req, res) {
+    petSchema.find(function (err, allPets) {
         if (err) {
             console.log(err);
         } else {
-            res.json(microchips);
+            res.json(allPets);
         }
     });
 });
 
-microchipRoutes.route('/:id').get(function (req, res) {
+petRoutes.route('/:id').get(function (req, res) {
     let id = req.params.id;
-    Microchip.findById(id, function (err, microchip) {
+    petSchema.findById(id, function (err, pet) {
         if (err) {
             console.log(err);
         } else {
-            res.json(microchip);
+            res.json(pet);
         }
     });
 });
 
-microchipRoutes.route('/update/:id').patch(function (req, res) {
+petRoutes.route('/update/:id').patch(function (req, res) {
     let id = req.params.id;
-    Microchip.findById(id, function (err, microchip) {
+    petSchema.findById(id, function (err, updatePet) {
         if (err) {
             console.log(err)
         } else {
-            if (!microchip) {
-                res.status(404).send("microchip " + req.body.microchip_Number + " is not found");
+            if (!updatePet) {
+                res.status(404).send("microchip " + req.body.microchip_number + " is not found");
             } else {
-                microchip.microchip_Number = req.body.microchip_Number;
-                microchip.owner_Email = req.body.owner_Email;
+                updatePet.microchip_number = req.body.microchip_number;
+                updatePet.owner_email = req.body.owner_email;
 
-                microchip.save().then(microchip => {
+                updatePet.save().then(pet => {
                     res.json({
-                        'microchip': microchip
+                        'updated-pet': pet
                     });
                 })
                 .catch(err => {
@@ -67,22 +74,16 @@ microchipRoutes.route('/update/:id').patch(function (req, res) {
     });
 });
 
-microchipRoutes.route('/add').post(function (req, res) {
-    let microchip = new Microchip(req.body);
+petRoutes.route('/register').post(function (req, res) {
+    let newPet = new petSchema(req.body);
 
-    microchip.save().then(microchip => {
+    newPet.save().then(pet => {
         res.status(200).json(
             {
-                'microchip': microchip
+                'registered-pet': pet
             }
         )
     }).catch(err => {
         res.status(400).send(err);
     });
-});
-
-app.use('/microchips', microchipRoutes);
-
-app.listen(PORT, function () {
-    console.log("Server is Running on PORT: " + PORT);
 });
