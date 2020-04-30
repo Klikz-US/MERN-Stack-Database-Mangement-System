@@ -12,13 +12,9 @@ const CountryOptions = props => (
     </option>
 );
 
-const StateOptions = props => (
-    <option value={props.sortname}>
-        {props.name}
-    </option>
-)
-
 const microchipRegExp = /(^991\d{12}$|^990164\d{9}$|^\d{9}$|^[a-zA-Z0-9]{10}$)/;
+const zipcodeRegExp = /^\d{5}(?:[-\s]\d{4})?$/;
+
 const schema = yup.object({
     microchip: yup.string()
         .min(9, "Microchip must be at least 9 characters")
@@ -28,8 +24,8 @@ const schema = yup.object({
     petName: yup.string()
         .required("Pet Name is a required field"),
     petSpecies: yup.string()
-        .notOneOf(["Choose One"], "Please select one")
-        .required("Species is a required field"),
+        .notOneOf(["Choose One"])
+        .required("Select Species"),
     petBreed: yup.string()
         .required("Breed is a required field"),
     petColor: yup.string()
@@ -63,9 +59,9 @@ const schema = yup.object({
     ownerCity: yup.string()
         .required("City is a required field"),
     ownerState: yup.string()
-        .oneOf(["KY"], "State is not valid")
         .required("State is a required field"),
     ownerZip: yup.string()
+        .matches(zipcodeRegExp, "Invalid Zip Code.")
         .required("Zipcode is a required field")
         
 });
@@ -111,13 +107,6 @@ export default class RegisterPet extends Component {
         return csc.getAllCountries().map(function (country, index) {
             return <CountryOptions name={country.name} sortname={country.sortname} key={index}></CountryOptions>
         });
-    }
-
-    listStateOptions (countryCode = "US") {
-        let countryId = csc.getCountryByCode(countryCode).id;
-        return csc.getStatesOfCountry(countryId).map(function (state, index) {
-            return <StateOptions name={state.name} sortname={state.sortname} key={index}></StateOptions>
-        })
     }
 
     render() {
@@ -166,9 +155,6 @@ export default class RegisterPet extends Component {
                             setSubmitting(false);
                         }, 400);
                     }}
-                    onChange={(values) => {
-                        this.onInputUpdate(values);
-                    }}
                 >
                     {({
                         values,
@@ -196,7 +182,7 @@ export default class RegisterPet extends Component {
                                                     value={values.microchip}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.microchip}
+                                                    isInvalid={touched.microchip && !!errors.microchip}
                                                     isValid={touched.microchip && !errors.microchip}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.microchip}</Form.Control.Feedback>
@@ -214,7 +200,7 @@ export default class RegisterPet extends Component {
                                                     value={values.petName}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.petName}
+                                                    isInvalid={touched.petName && !!errors.petName}
                                                     isValid={touched.petName && !errors.petName}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.petName}</Form.Control.Feedback>
@@ -228,7 +214,7 @@ export default class RegisterPet extends Component {
                                                     value={values.petSpecies}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.petSpecies}
+                                                    isInvalid={touched.petSpecies && !!errors.petSpecies}
                                                     isValid={touched.petSpecies && !errors.petSpecies}
                                                 >
                                                     <option>Choose One</option>
@@ -254,7 +240,7 @@ export default class RegisterPet extends Component {
                                                     value={values.petBreed}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.petBreed}
+                                                    isInvalid={touched.petBreed && !!errors.petBreed}
                                                     isValid={touched.petBreed && !errors.petBreed}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.petBreed}</Form.Control.Feedback>
@@ -269,7 +255,7 @@ export default class RegisterPet extends Component {
                                                     value={values.petColor}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.petColor}
+                                                    isInvalid={touched.petColor && !!errors.petColor}
                                                     isValid={touched.petColor && !errors.petColor}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.petColor}</Form.Control.Feedback>
@@ -287,7 +273,7 @@ export default class RegisterPet extends Component {
                                                         checked={values.petGender === "male"}
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        isInvalid={!!errors.petGender}
+                                                        isInvalid={touched.petGender && !!errors.petGender}
                                                         isValid={touched.petGender && !errors.petGender}
                                                     />
                                                     <Form.Check 
@@ -299,7 +285,7 @@ export default class RegisterPet extends Component {
                                                         checked={values.petGender === "female"}
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        isInvalid={!!errors.petGender}
+                                                        isInvalid={touched.petGender && !!errors.petGender}
                                                         isValid={touched.petGender && !errors.petGender}
                                                     />
                                                     <Form.Check 
@@ -312,7 +298,7 @@ export default class RegisterPet extends Component {
                                                         checked={values.petGender === "other"}
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        isInvalid={!!errors.petGender}
+                                                        isInvalid={touched.petGender && !!errors.petGender}
                                                         isValid={touched.petGender && !errors.petGender}
                                                     />
                                                     <Form.Control.Feedback type="invalid">{errors.petGender}</Form.Control.Feedback>
@@ -327,7 +313,7 @@ export default class RegisterPet extends Component {
                                                     value={values.petBirth}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.petBirth}
+                                                    isInvalid={touched.petBirth && !!errors.petBirth}
                                                     isValid={touched.petBirth && !errors.petBirth}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.petBirth}</Form.Control.Feedback>
@@ -395,7 +381,7 @@ export default class RegisterPet extends Component {
                                                     value={values.email}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.email}
+                                                    isInvalid={touched.email && !!errors.email}
                                                     isValid={touched.email && !errors.email}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
@@ -413,11 +399,10 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerName}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerName}
+                                                    isInvalid={touched.ownerName && !!errors.ownerName}
                                                     isValid={touched.ownerName && !errors.ownerName}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerName}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
 
                                             <Form.Group>
@@ -429,11 +414,10 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerPhone1}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerPhone1}
+                                                    isInvalid={touched.ownerPhone1 && !!errors.ownerPhone1}
                                                     isValid={touched.ownerPhone1 && !errors.ownerPhone1}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone1}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
 
                                             <Form.Group>
@@ -445,11 +429,9 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerPhone2}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerPhone2}
-                                                    isValid={touched.ownerPhone2 && !errors.ownerPhone2}
+                                                    isInvalid={touched.ownerPhone2 && !!errors.ownerPhone2}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone2}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
 
                                             <Form.Label>Address</Form.Label>
@@ -461,11 +443,10 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerAddress1}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerAddress1}
+                                                    isInvalid={touched.ownerAddress1 && !!errors.ownerAddress1}
                                                     isValid={touched.ownerAddress1 && !errors.ownerAddress1}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerAddress1}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
 
                                             <Form.Group>
@@ -488,22 +469,24 @@ export default class RegisterPet extends Component {
                                                         value={values.ownerCity}
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        isInvalid={!!errors.ownerCity}
+                                                        isInvalid={touched.ownerCity && !!errors.ownerCity}
                                                         isValid={touched.ownerCity && !errors.ownerCity}
                                                     />
                                                     <Form.Control.Feedback type="invalid">{errors.ownerCity}</Form.Control.Feedback>
-                                                    <Form.Control.Feedback></Form.Control.Feedback>
                                                 </Form.Group>
 
                                                 <Form.Group as={Col}>
                                                     <Form.Control
-                                                        as="select"
-                                                        name="ownerCountry"
-                                                        value={values.ownerCountry}
+                                                        type="text"
+                                                        name="ownerState"
+                                                        placeholder="State"
+                                                        value={values.ownerState}
                                                         onChange={handleChange}
-                                                    >
-                                                        {this.listStateOptions()}
-                                                    </Form.Control>
+                                                        onBlur={handleBlur}
+                                                        isInvalid={touched.ownerState && !!errors.ownerState}
+                                                        isValid={touched.ownerState && !errors.ownerState}
+                                                    />
+                                                    <Form.Control.Feedback type="invalid">{errors.ownerState}</Form.Control.Feedback>
                                                 </Form.Group>
 
                                             </Form.Row>
@@ -514,15 +497,14 @@ export default class RegisterPet extends Component {
                                                     <Form.Control
                                                         type="text"
                                                         name="ownerZip"
-                                                        placeholder="Zip Code"
+                                                        placeholder="12345 (12345-6789)"
                                                         value={values.ownerZip}
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        isInvalid={!!errors.ownerZip}
+                                                        isInvalid={touched.ownerZip && !!errors.ownerZip}
                                                         isValid={touched.ownerZip && !errors.ownerZip}
                                                     />
                                                     <Form.Control.Feedback type="invalid">{errors.ownerZip}</Form.Control.Feedback>
-                                                    <Form.Control.Feedback></Form.Control.Feedback>
                                                 </Form.Group>
 
                                                 <Form.Group as={Col}>
@@ -562,7 +544,6 @@ export default class RegisterPet extends Component {
                                                     isValid={touched.ownerPhone3 && !errors.ownerPhone3}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone3}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
 
                                             <Form.Group>
@@ -573,11 +554,9 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerPhone4}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerPhone4}
                                                     isValid={touched.ownerPhone4 && !errors.ownerPhone4}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone4}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
                                             
                                             <Form.Group>
@@ -588,11 +567,9 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerPhone5}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerPhone5}
                                                     isValid={touched.ownerPhone5 && !errors.ownerPhone5}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone5}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
                                             
                                             <Form.Group>
@@ -603,11 +580,9 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerPhone6}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerPhone6}
                                                     isValid={touched.ownerPhone6 && !errors.ownerPhone6}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone6}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
                                             
                                             <Form.Group>
@@ -618,11 +593,9 @@ export default class RegisterPet extends Component {
                                                     value={values.ownerPhone7}
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
-                                                    isInvalid={!!errors.ownerPhone7}
                                                     isValid={touched.ownerPhone7 && !errors.ownerPhone7}
                                                 />
                                                 <Form.Control.Feedback type="invalid">{errors.ownerPhone7}</Form.Control.Feedback>
-                                                <Form.Control.Feedback></Form.Control.Feedback>
                                             </Form.Group>
                                             
                                             <Form.Group>
