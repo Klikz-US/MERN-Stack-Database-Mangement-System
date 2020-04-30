@@ -40,6 +40,7 @@ petRoutes.route('/').get(function (req, res) {
 
 petRoutes.route('/:id').get(function (req, res) {
     let id = req.params.id;
+    console.log(id);
     petSchema.findById(id, function (err, pet) {
         if (err) {
             console.log(err);
@@ -51,24 +52,19 @@ petRoutes.route('/:id').get(function (req, res) {
 
 petRoutes.route('/update/:id').patch(function (req, res) {
     let id = req.params.id;
-    petSchema.findById(id, function (err, updatePet) {
+    petSchema.findByIdAndUpdate(id, req.body, function (err, updatedPet) {
         if (err) {
-            console.log(err)
-        } else {
-            if (!updatePet) {
-                res.status(404).send("microchip " + req.body.microchip_number + " is not found");
+            res.status(err.status).send(err.body);
+        }
+        else {
+            if (!updatedPet) {
+                res.status(404).send("microchip " + req.body.microchip + " is not found");
             } else {
-                updatePet.microchip_number = req.body.microchip_number;
-                updatePet.owner_email = req.body.owner_email;
-
-                updatePet.save().then(pet => {
-                    res.json({
-                        'updated-pet': pet
-                    });
-                })
-                .catch(err => {
-                    res.status(400).send(err);
-                });
+                res.status(200).json(
+                    {
+                        'updated-pet': updatedPet
+                    }
+                )
             }
         }
     });
