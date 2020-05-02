@@ -5,6 +5,7 @@ import '@availity/yup';
 import * as yup from "yup";
 import csc from 'country-state-city';
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
+import Image from 'react-bootstrap/Image'
 
 const CountryOptions = props => (
     <option value={props.sortname}>
@@ -71,6 +72,7 @@ export default class RegisterPet extends Component {
 
         this.onClickSubmit = this.onClickSubmit.bind(this);
         this.onClickCancel = this.onClickCancel.bind(this);
+        this.onPetPhotoUpdate = this.onPetPhotoUpdate.bind(this);
 
         this.state = {
             values: {
@@ -102,7 +104,11 @@ export default class RegisterPet extends Component {
                 ownerCountry: 'US',
                 ownerSecContact: '',
                 ownerNote: '',
-            }
+                membership: 'platinum'
+            },
+
+            petPhoto: undefined,
+            petPhotoPreview: undefined
         };
     }
 
@@ -111,11 +117,28 @@ export default class RegisterPet extends Component {
             .then(res => {
                 let petValues = res.data;
                 petValues.petBirth = petValues.petBirth.split('T')[0];
-                petValues.dateRV = petValues.dateRV.split('T')[0];
+                if (petValues.dateRV === null) {
+                    petValues.dateRV = '';
+                } else {
+                    petValues.dateRV = petValues.dateRV.split('T')[0];
+                }
 
+                console.log(petValues)
                 this.setState({
-                    values: petValues
+                    values: petValues,
+                    // petPhoto: res.data.petPhoto,
+                    // petPhotoPreview: URL.createObjectURL(res.data.petPhoto)
                 });
+
+                axios.get('http://localhost:4000/pets/photos/' + petValues.microchip)
+                    .then(res => {
+                        this.setState({
+                            petPhotoPreview: res.data
+                        });
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
             })
             .catch(err => {
                 console.log(err);
@@ -123,11 +146,29 @@ export default class RegisterPet extends Component {
     }
 
     onClickSubmit(values) {
+        // Update Pet
         axios.patch('http://localhost:4000/pets/update/' + this.props.match.params.id, values)
             .then(res => {
-                console.log(values);
-                console.log(res.data);
-                this.props.history.push('/pets');
+                if (this.state.petPhoto !== undefined) {
+                    // Upload Pet's Photo
+                    let photo_origin_name = this.state.petPhoto.name;
+                    let petPhotoName = values.microchip + "." + photo_origin_name.split('.')[photo_origin_name.split('.').length - 1];
+
+                    const photoData = new FormData();
+                    photoData.append('petMicrochip', values.microchip);
+                    photoData.append('petPhotoName', petPhotoName);
+                    photoData.append('petPhotoData', this.state.petPhoto);
+
+                    axios.post('http://localhost:4000/pets/register/photo', photoData)
+                        .then(res => {
+                            this.props.history.push('/pets');
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                } else {
+                    this.props.history.push('/pets');
+                }
             });
     }
 
@@ -140,6 +181,15 @@ export default class RegisterPet extends Component {
     listAllCountryOptions() {
         return csc.getAllCountries().map(function (country, index) {
             return <CountryOptions name={country.name} sortname={country.sortname} key={index}></CountryOptions>
+        });
+    }
+
+    onPetPhotoUpdate(e) {
+        e.preventDefault();
+
+        this.setState({
+            petPhoto: e.target.files[0],
+            petPhotoPreview: URL.createObjectURL(e.target.files[0])
         });
     }
 
@@ -165,7 +215,6 @@ export default class RegisterPet extends Component {
                         vetInfo: this.state.values.vetInfo,
                         dateRV: this.state.values.dateRV,
                         implantedCompany: this.state.values.implantedCompany,
-
                         email: this.state.values.email,
                         ownerName: this.state.values.ownerName,
                         ownerPhone1: this.state.values.ownerPhone1,
@@ -183,6 +232,7 @@ export default class RegisterPet extends Component {
                         ownerCountry: this.state.values.ownerCountry,
                         ownerSecContact: this.state.values.ownerSecContact,
                         ownerNote: this.state.values.ownerNote,
+                        membership: this.state.values.membership
                     }}
                     onSubmit={(values, { setSubmitting }) => {
                         setTimeout(() => {
@@ -204,8 +254,10 @@ export default class RegisterPet extends Component {
                                 <Container>
                                     <Row>
                                         <Col>
-                                            <Card className="h-100">
-                                                <Card.Header><h5 className="m-0">Pet Information</h5></Card.Header>
+                                            <Card className="h-100 shadow">
+                                                <Card.Header className="bg-danger text-white">
+                                                    <h5 className="m-0">Pet Information</h5>
+                                                </Card.Header>
                                                 <Card.Body>
 
                                                     <Form.Group>
@@ -223,7 +275,7 @@ export default class RegisterPet extends Component {
                                                         <Form.Control.Feedback type="invalid">{errors.microchip}</Form.Control.Feedback>
                                                         <Form.Text className="text-muted">
                                                             Do not include the microchip type code or manufacturer's name or abbreviation.
-                                                </Form.Text>
+                                        </Form.Text>
                                                     </Form.Group>
 
                                                     <Form.Group>
@@ -398,13 +450,28 @@ export default class RegisterPet extends Component {
                                                 </Form.Text>
                                                     </Form.Group>
 
+                                                    <Form.Group>
+                                                        <Form.Label>Pet's Photo</Form.Label>
+                                                        <Form.File custom>
+                                                            <Form.File.Input
+                                                                name="petPhoto"
+                                                                onChange={this.onPetPhotoUpdate}
+                                                            />
+                                                            <Form.File.Label data-browse="Upload">Max. 512mb. Type: .jpg / .jpeg / .png / .gif</Form.File.Label>
+                                                        </Form.File>
+                                                    </Form.Group>
+
+                                                    <Image src={this.state.petPhotoPreview} width="100%" height="auto" thumbnail />
+
                                                 </Card.Body>
                                             </Card>
                                         </Col>
 
                                         <Col>
-                                            <Card className="h-100">
-                                                <Card.Header><h5 className="m-0">Owner Information</h5></Card.Header>
+                                            <Card className="h-100 shadow">
+                                                <Card.Header className="bg-success text-white">
+                                                    <h5 className="m-0">Owner Information</h5>
+                                                </Card.Header>
                                                 <Card.Body>
 
                                                     <Form.Group>
@@ -422,7 +489,7 @@ export default class RegisterPet extends Component {
                                                         <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                                                         <Form.Text className="text-muted">
                                                             We'll never share your email with anyone else.
-                                                </Form.Text>
+                                        </Form.Text>
                                                     </Form.Group>
 
                                                     <Form.Group>
@@ -569,66 +636,60 @@ export default class RegisterPet extends Component {
                                                     <Form.Label>Additional Phones</Form.Label>
                                                     <Form.Group>
                                                         <Form.Control
-                                                            className="mb-1"
                                                             type="phone"
                                                             name="ownerPhone3"
                                                             value={values.ownerPhone3}
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            isInvalid={!!errors.ownerPhone3}
-                                                            isValid={touched.ownerPhone3 && !errors.ownerPhone3}
+                                                            isInvalid={touched.ownerPhone3 && !!errors.ownerPhone3}
                                                         />
                                                         <Form.Control.Feedback type="invalid">{errors.ownerPhone3}</Form.Control.Feedback>
                                                     </Form.Group>
 
                                                     <Form.Group>
                                                         <Form.Control
-                                                            className="mb-1"
                                                             type="phone"
                                                             name="ownerPhone4"
                                                             value={values.ownerPhone4}
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            isValid={touched.ownerPhone4 && !errors.ownerPhone4}
+                                                            isInvalid={touched.ownerPhone4 && !!errors.ownerPhone4}
                                                         />
                                                         <Form.Control.Feedback type="invalid">{errors.ownerPhone4}</Form.Control.Feedback>
                                                     </Form.Group>
 
                                                     <Form.Group>
                                                         <Form.Control
-                                                            className="mb-1"
                                                             type="phone"
                                                             name="ownerPhone5"
                                                             value={values.ownerPhone5}
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            isValid={touched.ownerPhone5 && !errors.ownerPhone5}
+                                                            isInvalid={touched.ownerPhone5 && !!errors.ownerPhone5}
                                                         />
                                                         <Form.Control.Feedback type="invalid">{errors.ownerPhone5}</Form.Control.Feedback>
                                                     </Form.Group>
 
                                                     <Form.Group>
                                                         <Form.Control
-                                                            className="mb-1"
                                                             type="phone"
                                                             name="ownerPhone6"
                                                             value={values.ownerPhone6}
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            isValid={touched.ownerPhone6 && !errors.ownerPhone6}
+                                                            isInvalid={touched.ownerPhone6 && !!errors.ownerPhone6}
                                                         />
                                                         <Form.Control.Feedback type="invalid">{errors.ownerPhone6}</Form.Control.Feedback>
                                                     </Form.Group>
 
                                                     <Form.Group>
                                                         <Form.Control
-                                                            className="mb-1"
                                                             type="phone"
                                                             name="ownerPhone7"
                                                             value={values.ownerPhone7}
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            isValid={touched.ownerPhone7 && !errors.ownerPhone7}
+                                                            isInvalid={touched.ownerPhone7 && !!errors.ownerPhone7}
                                                         />
                                                         <Form.Control.Feedback type="invalid">{errors.ownerPhone7}</Form.Control.Feedback>
                                                     </Form.Group>
@@ -648,10 +709,60 @@ export default class RegisterPet extends Component {
                                         </Col>
                                     </Row>
 
-                                    <Row>
-                                        <Col className="mt-3">
-                                            <Button variant="primary" type="submit" disabled={isSubmitting}>Update Pet</Button>{' '}
-                                            <Button variant="outline-secondary" onClick={this.onClickCancel}>Cancel</Button>
+                                    <Row className="mt-5">
+                                        <Col>
+                                            <Form.Group className="p-3 mb-0 shadow">
+                                                <Row>
+                                                    <Col className="text-center">
+                                                        <Form.Label className="mb-0">Select Membership Type</Form.Label>
+                                                    </Col>
+
+                                                    <Col className="p-0">
+
+                                                        <Form.Check
+                                                            className="mr-4"
+                                                            inline type="radio"
+                                                            label="Platinum"
+                                                            name="membership"
+                                                            value="platinum"
+                                                            checked={values.membership === "platinum"}
+                                                            onChange={handleChange}
+                                                        />
+
+                                                        <Form.Check
+                                                            className="mr-4"
+                                                            inline type="radio"
+                                                            label="Diamond"
+                                                            name="membership"
+                                                            value="diamond"
+                                                            checked={values.membership === "diamond"}
+                                                            onChange={handleChange}
+                                                        />
+
+                                                    </Col>
+                                                </Row>
+                                            </Form.Group>
+                                        </Col>
+
+                                        <Col>
+
+                                            <Button
+                                                className="float-right"
+                                                variant="outline-secondary"
+                                                onClick={this.onClickCancel}
+                                            >
+                                                Cancel
+                                    </Button>
+
+                                            <Button
+                                                className="float-right mr-2"
+                                                variant="primary"
+                                                type="submit"
+                                                disabled={isSubmitting}
+                                            >
+                                                Update Pet
+                                    </Button>
+
                                         </Col>
                                     </Row>
 

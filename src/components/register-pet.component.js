@@ -5,7 +5,7 @@ import '@availity/yup';
 import * as yup from "yup";
 import csc from 'country-state-city';
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
-import ImageUploader from 'react-images-upload';
+import Image from 'react-bootstrap/Image'
 
 const CountryOptions = props => (
     <option value={props.sortname}>
@@ -72,20 +72,38 @@ export default class RegisterPet extends Component {
 
         this.onClickSubmit = this.onClickSubmit.bind(this);
         this.onClickCancel = this.onClickCancel.bind(this);
-        // this.onDrop = this.onDrop.bind(this);
+        this.onPetPhotoUpdate = this.onPetPhotoUpdate.bind(this);
 
-        this.state = { pictures: [] };
-    }
-
-    componentDidMount() {
-        this.setState = { pictures: [] }
+        this.state = {
+            petPhoto: undefined,
+            petPhotoPreview: undefined
+        };
     }
 
     onClickSubmit(values) {
+        // Register Pet
         axios.post('http://localhost:4000/pets/register', values)
             .then(res => {
-                console.log(res)
-                this.props.history.push('/pets');
+                if (this.state.petPhoto !== undefined) {
+                    // Upload Pet's Photo
+                    let photo_origin_name = this.state.petPhoto.name;
+                    let petPhotoName = values.microchip + "." + photo_origin_name.split('.')[photo_origin_name.split('.').length - 1];
+
+                    const photoData = new FormData();
+                    photoData.append('petMicrochip', values.microchip);
+                    photoData.append('petPhotoName', petPhotoName);
+                    photoData.append('petPhotoData', this.state.petPhoto);
+
+                    axios.post('http://localhost:4000/pets/register/photo', photoData)
+                        .then(res => {
+                            this.props.history.push('/pets');
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                } else {
+                    this.props.history.push('/pets');
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -103,11 +121,16 @@ export default class RegisterPet extends Component {
         });
     }
 
-    // onDrop(picture) {
-    //     this.setState({
-    //         pictures: this.state.pictures.concat(picture),
-    //     });
-    // }
+    onPetPhotoUpdate(e) {
+        e.preventDefault();
+
+        if (e.target.files[0]) {
+            this.setState({
+                petPhoto: e.target.files[0],
+                petPhotoPreview: URL.createObjectURL(e.target.files[0])
+            });
+        }
+    }
 
     render() {
         return (
@@ -147,6 +170,7 @@ export default class RegisterPet extends Component {
                         ownerCountry: 'US',
                         ownerSecContact: '',
                         ownerNote: '',
+                        membership: 'platinum'
                     }}
                     onSubmit={(values, { setSubmitting }) => {
                         setTimeout(() => {
@@ -366,18 +390,16 @@ export default class RegisterPet extends Component {
 
                                                     <Form.Group>
                                                         <Form.Label>Pet's Photo</Form.Label>
-                                                        <Row>
-                                                            <ImageUploader
-                                                                withIcon={true}
-                                                                buttonText='Choose Photo'
-                                                                onChange={handleChange}
-                                                                imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                                                                maxFileSize={5242880}
-                                                                withPreview={true}
-                                                                singleImage={true}
+                                                        <Form.File custom>
+                                                            <Form.File.Input
+                                                                name="petPhoto"
+                                                                onChange={this.onPetPhotoUpdate}
                                                             />
-                                                        </Row>
+                                                            <Form.File.Label data-browse="Upload">Max. 512mb. Type: .jpg / .jpeg / .png / .gif</Form.File.Label>
+                                                        </Form.File>
                                                     </Form.Group>
+
+                                                    <Image src={this.state.petPhotoPreview} width="100%" height="auto" thumbnail />
 
                                                 </Card.Body>
                                             </Card>
@@ -625,10 +647,60 @@ export default class RegisterPet extends Component {
                                         </Col>
                                     </Row>
 
-                                    <Row>
-                                        <Col className="mt-5">
-                                            <Button variant="primary" type="submit" disabled={isSubmitting}>Register Pet</Button>{' '}
-                                            <Button variant="outline-secondary" onClick={this.onClickCancel}>Cancel</Button>
+                                    <Row className="mt-5">
+                                        <Col>
+                                            <Form.Group className="p-3 mb-0 shadow">
+                                                <Row>
+                                                    <Col className="text-center">
+                                                        <Form.Label className="mb-0">Select Membership Type</Form.Label>
+                                                    </Col>
+
+                                                    <Col className="p-0">
+
+                                                        <Form.Check
+                                                            className="mr-4"
+                                                            inline type="radio"
+                                                            label="Platinum"
+                                                            name="membership"
+                                                            value="platinum"
+                                                            checked={values.membership === "platinum"}
+                                                            onChange={handleChange}
+                                                        />
+
+                                                        <Form.Check
+                                                            className="mr-4"
+                                                            inline type="radio"
+                                                            label="Diamond"
+                                                            name="membership"
+                                                            value="diamond"
+                                                            checked={values.membership === "diamond"}
+                                                            onChange={handleChange}
+                                                        />
+
+                                                    </Col>
+                                                </Row>
+                                            </Form.Group>
+                                        </Col>
+
+                                        <Col>
+
+                                            <Button
+                                                className="float-right"
+                                                variant="outline-secondary"
+                                                onClick={this.onClickCancel}
+                                            >
+                                                Cancel
+                                            </Button>
+
+                                            <Button
+                                                className="float-right mr-2"
+                                                variant="primary"
+                                                type="submit"
+                                                disabled={isSubmitting}
+                                            >
+                                                Register Pet
+                                            </Button>
+
                                         </Col>
                                     </Row>
 

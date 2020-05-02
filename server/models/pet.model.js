@@ -4,25 +4,32 @@ const Schema = mongoose.Schema;
 let petSchema = new Schema(
     {
         microchip: {
-            type: String
+            type: String,
+            required: true
         },
         petName: {
-            type: String
+            type: String,
+            required: true
         },
         petSpecies: {
-            type: String
+            type: String,
+            required: true
         },
         petBreed: {
-            type: String
+            type: String,
+            required: true
         },
         petColor: {
-            type: String
+            type: String,
+            required: true
         },
         petGender: {
-            type: String
+            type: String,
+            required: true
         },
         petBirth: {
-            type: Date
+            type: Date,
+            required: true
         },
         specialNeeds: {
             type: String
@@ -37,13 +44,16 @@ let petSchema = new Schema(
             type: String
         },
         email: {
-            type: String
+            type: String,
+            required: true
         },
         ownerName: {
-            type: String
+            type: String,
+            required: true
         },
         ownerPhone1: {
-            type: String
+            type: String,
+            required: true
         },
         ownerPhone2: {
             type: String
@@ -64,32 +74,46 @@ let petSchema = new Schema(
             type: String
         },
         ownerAddress1: {
-            type: String
+            type: String,
+            required: true
         },
         ownerAddress2: {
             type: String
         },
         ownerCity: {
-            type: String
+            type: String,
+            required: true
         },
         ownerState: {
-            type: String
+            type: String,
+            required: true
         },
         ownerZip: {
-            type: String
+            type: String,
+            required: true
         },
         ownerCountry: {
-            type: String
+            type: String,
+            required: true
         },
         ownerSecContact: {
             type: String
         },
         ownerNote: {
             type: String
+        },
+        membership: {
+            type: String,
+            default: "platinum",
+            required: true
         }
-    }, 
+    },
     {
-        collection: 'pets'
+        collection: 'pets',
+        timestamps: {
+            createdAt: 'create_at',
+            updatedAt: 'updated_at'
+        }
     }
 );
 module.exports = mongoose.model('petSchema', petSchema);
