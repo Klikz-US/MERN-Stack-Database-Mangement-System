@@ -6,11 +6,10 @@ import { Container, Row } from "react-bootstrap";
 
 const Pet = props => (
     <tr>
-        <td>{props.pet.microchip}</td>
+        <td><Link to={'/pets/edit/' + props.pet.microchip}>{props.pet.microchip}</Link></td>
         <td>{props.pet.petName}</td>
         <td>{props.pet.ownerName}</td>
         <td>{props.pet.email}</td>
-        <td><Link to={'/pets/edit/' + props.pet._id}>Edit</Link></td>
     </tr>
 );
 
@@ -58,7 +57,6 @@ export default class PetList extends Component {
                                     <th>Pet Name</th>
                                     <th>Owner Name</th>
                                     <th>Owner Email</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
 

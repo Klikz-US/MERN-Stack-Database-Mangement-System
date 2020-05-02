@@ -116,7 +116,13 @@ export default class RegisterPet extends Component {
         axios.get('http://localhost:4000/pets/' + this.props.match.params.id)
             .then(res => {
                 let petValues = res.data;
-                petValues.petBirth = petValues.petBirth.split('T')[0];
+
+                if (petValues.petBirth === null) {
+                    petValues.petBirth = '';
+                } else {
+                    petValues.petBirth = petValues.petBirth.split('T')[0];
+                }
+
                 if (petValues.dateRV === null) {
                     petValues.dateRV = '';
                 } else {
@@ -126,8 +132,6 @@ export default class RegisterPet extends Component {
                 console.log(petValues)
                 this.setState({
                     values: petValues,
-                    // petPhoto: res.data.petPhoto,
-                    // petPhotoPreview: URL.createObjectURL(res.data.petPhoto)
                 });
 
                 axios.get('http://localhost:4000/pets/photos/' + petValues.microchip)
@@ -147,7 +151,7 @@ export default class RegisterPet extends Component {
 
     onClickSubmit(values) {
         // Update Pet
-        axios.patch('http://localhost:4000/pets/update/' + this.props.match.params.id, values)
+        axios.patch('http://localhost:4000/pets/update', values)
             .then(res => {
                 if (this.state.petPhoto !== undefined) {
                     // Upload Pet's Photo

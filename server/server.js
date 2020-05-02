@@ -22,6 +22,7 @@ app.listen(PORT, function () {
     console.log("Server is Running on PORT: " + PORT);
 });
 
+let ownerSchema = require('./models/owner.model');
 let petSchema = require('./models/pet.model');
 let photoSchema = require('./models/pet-photo.model');
 
@@ -66,65 +67,153 @@ petRoutes.route('/').get(function (req, res) {
     });
 });
 
-petRoutes.route('/:id').get(function (req, res) {
-    let id = req.params.id;
-    console.log(id);
-    petSchema.findById(id, function (err, pet) {
+petRoutes.route('/:microchip').get(function (req, res) {
+    let microchip = req.params.microchip;
+    petSchema.findOne({ "microchip": microchip }, function (err, pet) {
         if (err) {
             console.log(err);
         } else {
-            res.json(pet);
+            if (!pet) {
+                res.status(404).send("Pet Not found");
+            } else {
+                let email = pet.email;
+
+                ownerSchema.findOne({ "email": email }, function (err, owner) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        if (!owner) {
+                            res.status(404).send("Owner Not found");
+                        } else {
+                            const response = { ...pet._doc, ...owner._doc };
+                            delete response._id;
+                            delete response.__v
+                            res.json(response);
+                        }
+                    }
+                });
+            }
         }
     });
 });
 
-petRoutes.route('/update/:id').patch(function (req, res) {
-    let id = req.params.id;
-    petSchema.findByIdAndUpdate(id, req.body, function (err, updatedPet) {
-        if (err) {
-            res.status(err.status).send(err.body);
-        }
-        else {
-            if (!updatedPet) {
-                res.status(404).send("microchip " + req.body.microchip + " is not found");
+petRoutes.route('/update').patch(function (req, res) {
+    mongoose.set('useFindAndModify', false);
+
+    let email = req.body.email;
+    const newOwner = new ownerSchema(req.body);
+    ownerSchema.findOneAndUpdate(
+        {
+            'email': email
+        },
+        req.body,
+        {
+            returnOriginal: false,
+            new: true
+        },
+        function (err, owner) {
+            if (err) {
+                res.status(500).send({ get_error: err });
             } else {
-                res.status(200).json(
+                if (!owner) {
+                    newOwner.save();
+                }
+
+                let microchip = req.body.microchip;
+                const newPet = new petSchema(req.body);
+
+                petSchema.findOneAndUpdate(
                     {
-                        'updated-pet': updatedPet
+                        'microchip': microchip
+                    },
+                    req.body,
+                    {
+                        returnOriginal: false,
+                        new: true
+                    },
+                    function (err, pet) {
+                        if (err) {
+                            res.status(500).send({ get_error: err });
+                        } else {
+                            if (!pet) {
+                                res.status(404).send("Pet not found.");
+                            } else {
+                                res.json(
+                                    {
+                                        "owner": owner,
+                                        "pet": pet
+                                    }
+                                );
+                            }
+                        }
                     }
-                )
+                );
             }
         }
-    });
+    );
 });
 
 petRoutes.route('/register').post(function (req, res, next) {
-    const newPet = new petSchema(req.body);
+    mongoose.set('useFindAndModify', false);
 
-    newPet.save().then(pet => {
-        res.status(200).json(
-            {
-                'registered-pet': pet
+    let email = req.body.email;
+    const newOwner = new ownerSchema(req.body);
+    ownerSchema.findOneAndUpdate(
+        {
+            'email': email
+        },
+        req.body,
+        {
+            returnOriginal: false,
+            new: true
+        },
+        function (err, owner) {
+            if (err) {
+                res.status(500).send({ get_error: err });
+            } else {
+                if (!owner) {
+                    newOwner.save();
+                }
+
+                let microchip = req.body.microchip;
+                const newPet = new petSchema(req.body);
+
+                petSchema.findOneAndUpdate(
+                    {
+                        'microchip': microchip
+                    },
+                    req.body,
+                    {
+                        returnOriginal: false,
+                        new: true
+                    },
+                    function (err, pet) {
+                        if (err) {
+                            res.status(500).send({ get_error: err });
+                        } else {
+                            if (!pet) {
+                                newPet.save().then(pet => {
+                                    res.json(
+                                        {
+                                            "owner": owner,
+                                            "pet": pet
+                                        }
+                                    );
+                                }).catch(err => next(err));
+                            } else {
+                                res.status(404).send("Pet already has been registered.");
+                            }
+                        }
+                    }
+                );
             }
-        )
-    }).catch(err => next(err));
+        }
+    );
 });
 
 petRoutes.route('/register/photo').post(upload.single('petPhotoData'), (req, res, next) => {
     let petMicrochip = req.body.petMicrochip;
-    photoSchema.findoneand
-    photoSchema.findOneAndDelete({ 'petMicrochip': petMicrochip }, function (err, photoData) {
-        if (err) {
-            console.log("Deleting pre-uploaded pet's image has been failed");
-        } else {
-            if (!photoData) {
-                console.log("This Pet's image has not been uploaded yet");
-            } else {
-                console.log("pre-uploaded photo has been removed");
-                console.log(photoData);
-            }
-        }
-    })
+    photoSchema.findOneAndDelete({ 'petMicrochip': petMicrochip });
 
     const newPetPhoto = new photoSchema({
         petMicrochip: petMicrochip,
@@ -154,7 +243,7 @@ petRoutes.route('/photos').get(function (req, res) {
 petRoutes.route('/photos/:microchip').get(function (req, res, next) {
     let microchip = req.params.microchip;
 
-    photoSchema.findOne({ 'petMicrochip': microchip }, 'petPhotoData', function (err, photoData) {
+    photoSchema.findOne({ 'petMicrochip': microchip }, function (err, photoData) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
@@ -165,5 +254,5 @@ petRoutes.route('/photos/:microchip').get(function (req, res, next) {
                 res.status(404).send("this pet's photo is not uploaded yet")
             }
         }
-    })
+    });
 });

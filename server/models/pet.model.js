@@ -55,53 +55,6 @@ let petSchema = new Schema(
             type: String,
             required: true
         },
-        ownerPhone2: {
-            type: String
-        },
-        ownerPhone3: {
-            type: String
-        },
-        ownerPhone4: {
-            type: String
-        },
-        ownerPhone5: {
-            type: String
-        },
-        ownerPhone6: {
-            type: String
-        },
-        ownerPhone7: {
-            type: String
-        },
-        ownerAddress1: {
-            type: String,
-            required: true
-        },
-        ownerAddress2: {
-            type: String
-        },
-        ownerCity: {
-            type: String,
-            required: true
-        },
-        ownerState: {
-            type: String,
-            required: true
-        },
-        ownerZip: {
-            type: String,
-            required: true
-        },
-        ownerCountry: {
-            type: String,
-            required: true
-        },
-        ownerSecContact: {
-            type: String
-        },
-        ownerNote: {
-            type: String
-        },
         membership: {
             type: String,
             default: "platinum",
