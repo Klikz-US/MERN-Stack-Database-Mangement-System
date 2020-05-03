@@ -58,7 +58,6 @@ export default class RegisterOwner extends Component {
         // Register Owner
         axios.post('http://localhost:4000/owners/register', values)
             .then(res => {
-                console.log(res);
                 this.props.history.push('/owners');
             })
             .catch(err => {

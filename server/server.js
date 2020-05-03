@@ -213,14 +213,9 @@ petRoutes.route('/register').post(function (req, res, next) {
                 let microchip = req.body.microchip;
                 const newPet = new petSchema(req.body);
 
-                petSchema.findOneAndUpdate(
+                petSchema.findOne(
                     {
                         'microchip': microchip
-                    },
-                    req.body,
-                    {
-                        returnOriginal: false,
-                        new: true
                     },
                     function (err, pet) {
                         if (err) {
