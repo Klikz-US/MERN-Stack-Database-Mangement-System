@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
+
 const Schema = mongoose.Schema;
 
 let petSchema = new Schema(
@@ -47,14 +49,6 @@ let petSchema = new Schema(
             type: String,
             required: true
         },
-        ownerName: {
-            type: String,
-            required: true
-        },
-        ownerPhone1: {
-            type: String,
-            required: true
-        },
         membership: {
             type: String,
             default: "platinum",
@@ -69,4 +63,6 @@ let petSchema = new Schema(
         }
     }
 );
+
+petSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model('petSchema', petSchema);

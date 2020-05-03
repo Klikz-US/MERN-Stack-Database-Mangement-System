@@ -58,6 +58,7 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
+
 petRoutes.route('/').get(function (req, res) {
     petSchema.find(function (err, allPets) {
         if (err) {
@@ -66,6 +67,40 @@ petRoutes.route('/').get(function (req, res) {
             res.json(allPets);
         }
     });
+});
+
+petRoutes.route('/count').get(function (req, res) {
+    console.log("count")
+    petSchema.find().countDocuments(function (err, count) {
+        console.log(count)
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else {
+            res.json(count);
+        }
+    })
+});
+
+petRoutes.route('/page/:pageId').get(function (req, res) {
+    let pageId = req.params.pageId;
+
+    petSchema.paginate(
+        {},
+        {
+            page: pageId,
+            limit: 20,
+            sort: {
+                updated_at: -1
+            }
+        },
+        function (err, pets) {
+            if (err) {
+                res.status(500).send({ get_error: err });
+            } else {
+                res.json(pets.docs);
+            }
+        }
+    );
 });
 
 petRoutes.route('/:microchip').get(function (req, res) {
@@ -121,8 +156,6 @@ petRoutes.route('/update').patch(function (req, res) {
                 }
 
                 let microchip = req.body.microchip;
-                const newPet = new petSchema(req.body);
-
                 petSchema.findOneAndUpdate(
                     {
                         'microchip': microchip

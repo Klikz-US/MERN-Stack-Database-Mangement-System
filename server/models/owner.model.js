@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
+
 const Schema = mongoose.Schema;
 
 let ownerSchema = new Schema(
@@ -71,4 +73,6 @@ let ownerSchema = new Schema(
         }
     }
 );
+
+ownerSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model('ownerSchema', ownerSchema);
