@@ -29,19 +29,20 @@ export default class PetList extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/pets/page/1')
+        axios.get('http://localhost:4000/pets/count')
             .then(res => {
                 this.setState({
-                    allPets: res.data
+                    totalPages: parseInt(res.data / 20)
                 });
             })
             .catch(err => {
                 console.log(err);
             });
-        axios.get('http://localhost:4000/pets/count')
+
+        axios.get('http://localhost:4000/pets/page/1')
             .then(res => {
                 this.setState({
-                    totalPages: parseInt(res.data / 20)
+                    allPets: res.data
                 });
             })
             .catch(err => {
@@ -63,10 +64,16 @@ export default class PetList extends Component {
     }
 
     handleNextPage(activePage) {
-        this.setState({
-            activePage
-        });
-        // fetch data for the next page
+        axios.get('http://localhost:4000/pets/page/' + activePage)
+            .then(res => {
+                this.setState({
+                    activePage,
+                    allPets: res.data
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     render() {

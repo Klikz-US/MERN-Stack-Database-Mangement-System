@@ -96,13 +96,13 @@ export default class RegisterPet extends Component {
 
                     axios.post('http://localhost:4000/photos/add', photoData)
                         .then(res => {
-                            this.props.history.push('/pets');
+                            // this.props.history.push('/pets');
                         })
                         .catch(err => {
                             console.log(err);
                         });
                 } else {
-                    this.props.history.push('/pets');
+                    // this.props.history.push('/pets');
                 }
             })
             .catch(err => {
