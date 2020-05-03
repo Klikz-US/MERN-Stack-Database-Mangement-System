@@ -134,7 +134,7 @@ export default class RegisterPet extends Component {
                     values: petValues,
                 });
 
-                axios.get('http://localhost:4000/pets/photos/' + petValues.microchip)
+                axios.get('http://localhost:4000/photos/' + petValues.microchip)
                     .then(res => {
                         this.setState({
                             petPhotoPreview: res.data
@@ -163,7 +163,7 @@ export default class RegisterPet extends Component {
                     photoData.append('petPhotoName', petPhotoName);
                     photoData.append('petPhotoData', this.state.petPhoto);
 
-                    axios.post('http://localhost:4000/pets/register/photo', photoData)
+                    axios.post('http://localhost:4000/photos/add', photoData)
                         .then(res => {
                             this.props.history.push('/pets');
                         })

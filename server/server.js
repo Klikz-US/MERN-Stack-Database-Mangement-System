@@ -26,17 +26,18 @@ let ownerSchema = require('./models/owner.model');
 let petSchema = require('./models/pet.model');
 let photoSchema = require('./models/pet-photo.model');
 
-const petRoutes = express.Router();
 const userRoutes = express.Router();
-app.use('/pets', petRoutes);
+const petRoutes = express.Router();
+const photoRoutes = express.Router();
 app.use('/users', userRoutes);
+app.use('/pets', petRoutes);
+app.use('/photos', photoRoutes);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, '/uploads/');
     },
     filename: function (req, file, cb) {
-        console.log(file);
         cb(null, req.body.petPhotoName);
     }
 });
@@ -211,26 +212,9 @@ petRoutes.route('/register').post(function (req, res, next) {
     );
 });
 
-petRoutes.route('/register/photo').post(upload.single('petPhotoData'), (req, res, next) => {
-    let petMicrochip = req.body.petMicrochip;
-    photoSchema.findOneAndDelete({ 'petMicrochip': petMicrochip });
 
-    const newPetPhoto = new photoSchema({
-        petMicrochip: petMicrochip,
-        petPhotoName: req.body.petPhotoName,
-        petPhotoData: req.file.path
-    });
 
-    newPetPhoto.save().then(photo => {
-        res.status(200).json(
-            {
-                'uploaded-photo': photo
-            }
-        )
-    }).catch(err => next(err));
-});
-
-petRoutes.route('/photos').get(function (req, res) {
+photoRoutes.route('/').get(function (req, res) {
     photoSchema.find(function (err, allPhotos) {
         if (err) {
             res.status(500).send({ get_error: err });
@@ -240,7 +224,7 @@ petRoutes.route('/photos').get(function (req, res) {
     });
 });
 
-petRoutes.route('/photos/:microchip').get(function (req, res, next) {
+photoRoutes.route('/:microchip').get(function (req, res, next) {
     let microchip = req.params.microchip;
 
     photoSchema.findOne({ 'petMicrochip': microchip }, function (err, photoData) {
@@ -255,4 +239,23 @@ petRoutes.route('/photos/:microchip').get(function (req, res, next) {
             }
         }
     });
+});
+
+photoRoutes.route('/add').post(upload.single('petPhotoData'), (req, res, next) => {
+    let petMicrochip = req.body.petMicrochip;
+    photoSchema.findOneAndDelete({ 'petMicrochip': petMicrochip }, function (err, photoData) { });
+
+    const newPetPhoto = new photoSchema({
+        petMicrochip: petMicrochip,
+        petPhotoName: req.body.petPhotoName,
+        petPhotoData: req.file.path
+    });
+
+    newPetPhoto.save().then(photo => {
+        res.status(200).json(
+            {
+                'uploaded-photo': photo
+            }
+        )
+    }).catch(err => next(err));
 });
