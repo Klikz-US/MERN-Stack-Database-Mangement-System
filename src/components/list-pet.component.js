@@ -41,8 +41,7 @@ export default class PetList extends Component {
         axios.get('http://localhost:4000/pets/count')
             .then(res => {
                 this.setState({
-                    // totalPages: parseInt(res.data / 20)
-                    totalPages: 400
+                    totalPages: parseInt(res.data / 20)
                 });
             })
             .catch(err => {
