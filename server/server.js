@@ -26,10 +26,10 @@ let ownerSchema = require('./models/owner.model');
 let petSchema = require('./models/pet.model');
 let photoSchema = require('./models/pet-photo.model');
 
-const userRoutes = express.Router();
+const ownerRoutes = express.Router();
 const petRoutes = express.Router();
 const photoRoutes = express.Router();
-app.use('/users', userRoutes);
+app.use('/owners', ownerRoutes);
 app.use('/pets', petRoutes);
 app.use('/photos', photoRoutes);
 
@@ -59,6 +59,9 @@ const upload = multer({
 });
 
 
+/*
+ * For Pet
+ */
 petRoutes.route('/').get(function (req, res) {
     petSchema.find(function (err, allPets) {
         if (err) {
@@ -70,9 +73,7 @@ petRoutes.route('/').get(function (req, res) {
 });
 
 petRoutes.route('/count').get(function (req, res) {
-    console.log("count")
     petSchema.find().countDocuments(function (err, count) {
-        console.log(count)
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
@@ -246,7 +247,124 @@ petRoutes.route('/register').post(function (req, res, next) {
 });
 
 
+/*
+ * For Owner
+ */
+ownerRoutes.route('/').get(function (req, res) {
+    ownerSchema.find(function (err, allOwners) {
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else {
+            res.json(allOwners);
+        }
+    });
+});
 
+ownerRoutes.route('/count').get(function (req, res) {
+    ownerSchema.find().countDocuments(function (err, count) {
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else {
+            res.json(count);
+        }
+    })
+});
+
+ownerRoutes.route('/page/:pageId').get(function (req, res) {
+    let pageId = req.params.pageId;
+
+    ownerSchema.paginate(
+        {},
+        {
+            page: pageId,
+            limit: 20,
+            sort: {
+                updated_at: -1
+            }
+        },
+        function (err, owners) {
+            if (err) {
+                res.status(500).send({ get_error: err });
+            } else {
+                res.json(owners.docs);
+            }
+        }
+    );
+});
+
+ownerRoutes.route('/:ownerName').get(function (req, res) {
+    let ownerName = req.params.ownerName;
+    ownerSchema.findOne({ "ownerName": ownerName }, function (err, owner) {
+        if (err) {
+            console.log(err);
+        } else {
+            if (!owner) {
+                res.status(404).send("Owner Not found");
+            } else {
+                res.json(owner)
+            }
+        }
+    });
+});
+
+ownerRoutes.route('/update/:_id').patch(function (req, res) {
+    mongoose.set('useFindAndModify', false);
+
+    let _id = req.params._id;
+    console.log(_id)
+    ownerSchema.findOneAndUpdate(
+        {
+            '_id': _id
+        },
+        req.body,
+        {
+            returnOriginal: false,
+            new: true
+        },
+        function (err, owner) {
+            if (err) {
+                res.status(500).send({ get_error: err });
+            } else {
+                if (!owner) {
+                    res.status(404).send("Owner Not Found");
+                } else {
+                    res.json(owner);
+                }
+            }
+        }
+    );
+});
+
+ownerRoutes.route('/register').post(function (req, res, next) {
+    mongoose.set('useFindAndModify', false);
+
+    let email = req.body.email;
+    const newOwner = new ownerSchema(req.body);
+    ownerSchema.findOneAndUpdate(
+        {
+            'email': email
+        },
+        req.body,
+        {
+            returnOriginal: false,
+            new: true
+        },
+        function (err, owner) {
+            if (err) {
+                res.status(500).send({ get_error: err });
+            } else {
+                if (!owner) {
+                    newOwner.save();
+                }
+            }
+        }
+    );
+});
+
+
+/*
+ * For Pet Photo
+ */
 photoRoutes.route('/').get(function (req, res) {
     photoSchema.find(function (err, allPhotos) {
         if (err) {

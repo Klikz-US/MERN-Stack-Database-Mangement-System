@@ -129,7 +129,6 @@ export default class RegisterPet extends Component {
                     petValues.dateRV = petValues.dateRV.split('T')[0];
                 }
 
-                console.log(petValues)
                 this.setState({
                     values: petValues,
                 });

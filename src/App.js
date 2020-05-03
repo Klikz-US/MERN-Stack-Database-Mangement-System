@@ -13,6 +13,9 @@ import logo from "./logo.png";
 import PetList from "./components/list-pet.component";
 import EditPet from "./components/update-pet.component";
 import RegisterPet from "./components/register-pet.component";
+import OwnerList from "./components/list-owner.component";
+import EditOwner from "./components/update-owner.component";
+import RegisterOwner from "./components/register-owner.component";
 
 class App extends Component {
     constructor(props) {
@@ -76,6 +79,9 @@ class App extends Component {
                     <Route path="/pets" exact component={PetList}></Route>
                     <Route path="/pets/edit/:id" component={EditPet}></Route>
                     <Route path="/pets/register" component={RegisterPet}></Route>
+                    <Route path="/owners" exact component={OwnerList}></Route>
+                    <Route path="/owners/edit/:id" component={EditOwner}></Route>
+                    <Route path="/owners/register" component={RegisterOwner}></Route>
                 </main>
 
                 <footer className="mt-5 pt-4 pb-4">
