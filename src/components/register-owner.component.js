@@ -394,7 +394,7 @@ export default class RegisterOwner extends Component {
                                                 type="submit"
                                                 disabled={isSubmitting}
                                             >
-                                                Register Pet
+                                                Register Owner
                                             </Button>
 
                                         </Col>

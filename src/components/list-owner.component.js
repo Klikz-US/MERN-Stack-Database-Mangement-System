@@ -7,7 +7,7 @@ import Pagination from "./pagination.component";
 
 const Owner = props => (
     <tr>
-        <td><Link to={'/owners/edit/' + props.owner.ownerName}>{props.owner.ownerName}</Link></td>
+        <td><Link to={'/owners/edit/' + props.owner._id}>{props.owner.ownerName}</Link></td>
         <td>{props.owner.email}</td>
         <td>{props.owner.ownerPhone1}</td>
         <td className="text-capitalize">{props.owner.ownerCity}</td>

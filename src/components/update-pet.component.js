@@ -81,7 +81,7 @@ export default class RegisterPet extends Component {
                 petSpecies: '',
                 petBreed: '',
                 petColor: '',
-                petGender: '',
+                petGender: 'male',
                 petBirth: '',
                 specialNeeds: '',
                 vetInfo: '',
@@ -132,6 +132,8 @@ export default class RegisterPet extends Component {
                 this.setState({
                     values: petValues,
                 });
+
+                console.log(this.state.values)
 
                 axios.get('http://localhost:4000/photos/' + petValues.microchip)
                     .then(res => {
@@ -360,7 +362,7 @@ export default class RegisterPet extends Component {
                                                                 label="Male"
                                                                 name="petGender"
                                                                 value="male"
-                                                                checked={values.petGender === "male"}
+                                                                checked={values.petGender.toLowerCase() === "male"}
                                                                 onChange={handleChange}
                                                                 onBlur={handleBlur}
                                                                 isInvalid={touched.petGender && !!errors.petGender}
@@ -372,7 +374,7 @@ export default class RegisterPet extends Component {
                                                                 label="Female"
                                                                 name="petGender"
                                                                 value="female"
-                                                                checked={values.petGender === "female"}
+                                                                checked={values.petGender.toLowerCase() === "female"}
                                                                 onChange={handleChange}
                                                                 onBlur={handleBlur}
                                                                 isInvalid={touched.petGender && !!errors.petGender}
@@ -385,7 +387,7 @@ export default class RegisterPet extends Component {
                                                                 label="Other"
                                                                 name="petGender"
                                                                 value="other"
-                                                                checked={values.petGender === "other"}
+                                                                checked={values.petGender.toLowerCase() === "other"}
                                                                 onChange={handleChange}
                                                                 onBlur={handleBlur}
                                                                 isInvalid={touched.petGender && !!errors.petGender}

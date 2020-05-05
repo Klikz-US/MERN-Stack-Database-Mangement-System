@@ -13,7 +13,7 @@ const papaparseOptions = {
             .replace(/\W/g, '_')
 }
 
-export default class ImportPet extends Component {
+export default class ImportOwner extends Component {
     constructor(props) {
         super(props);
         this.onFileLoaded = this.onFileLoaded.bind(this)
@@ -44,25 +44,29 @@ export default class ImportPet extends Component {
                     })
                     .catch(err => {
                         const data = {
-                            microchip: err.response.data.pet.microchip,
-                            petName: err.response.data.pet.name,
-                            petSpecies: err.response.data.pet.species,
-                            petBreed: err.response.data.pet.breed,
-                            petColor: err.response.data.pet.color,
-                            petGender: err.response.data.pet.gender,
-                            petBirth: err.response.data.registrationDate,
-                            specialNeeds: '',
-                            vetInfo: '',
-                            dateRV: '',
-                            implantedCompany: err.response.data.pet.implantCompany,
                             email: err.response.data.owner.email,
-                            membership: err.response.data.registrationType,
+                            ownerName: err.response.data.owner.name,
+                            ownerPhone1: err.response.data.owner.phone1,
+                            ownerAddress1: err.response.data.owner.address,
+                            ownerAddress2: '',
+                            ownerCity: err.response.data.owner.city,
+                            ownerState: err.response.data.owner.state,
+                            ownerZip: err.response.data.zipcode,
+                            ownerCountry: err.response.data.owner.country,
+                            ownerPhone2: '',
+                            ownerPhone3: '',
+                            ownerPhone4: '',
+                            ownerPhone5: '',
+                            ownerPhone6: '',
+                            ownerPhone7: '',
+                            ownerSecContact: '',
+                            ownerNote: '',
                         }
 
-                        axios.post('http://localhost:4000/petimport/register', data)
+                        axios.post('http://localhost:4000/ownerimport/register', data)
                             .then(res => {
-                                index++;
                                 console.log(res);
+                                index++;
                                 _importMicrochip();
                             })
                             .catch(err => {

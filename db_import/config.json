@@ -1,0 +1,10 @@
+{
+    "uid": "stl_server",
+    "append": true,
+    "watch": true,
+    "script": "app.js",
+    "sourceDir": "./",
+    "logFile": "./home/klikz/logs/STL_Portal_NodeJS/forever.log",
+    "outFile": "./home/klikz/logs/STL_Portal_NodeJS/out.log",
+    "errFile": "./home/klikz/logs/STL_Portal_NodeJS/error.log"
+}

@@ -16,8 +16,6 @@ import OwnerList from "./components/list-owner.component";
 import EditOwner from "./components/update-owner.component";
 import RegisterOwner from "./components/register-owner.component";
 
-import ImportPet from "./components/import-pet.component";
-
 class App extends Component {
     constructor(props) {
         super(props);
@@ -48,31 +46,17 @@ class App extends Component {
 
                                     <NavDropdown title="Manage Pets">
 
-                                        <NavDropdown.Item>
-                                            <Link to="/pets">Registered Pets</Link>
-                                        </NavDropdown.Item>
+                                        <Link to="/pets" className="d-block px-2 py-1 text-dark">Registered Pets</Link>
 
-                                        <NavDropdown.Item>
-                                            <Link to="/pets/register">Register New Pet</Link>
-                                        </NavDropdown.Item>
+                                        <Link to="/pets/register" className="d-block px-2 py-1 text-dark">Register New Pet</Link>
 
-                                        <NavDropdown.Divider />
-                                        <NavDropdown.Item href="/pets/import">Import Pets</NavDropdown.Item>
-                                        <NavDropdown.Item href="/pets/export">Export Pets</NavDropdown.Item>
                                     </NavDropdown>
                                     <NavDropdown title="Manage Owners">
 
-                                        <NavDropdown.Item>
-                                            <Link to="/owners">Registered Owners</Link>
-                                        </NavDropdown.Item>
+                                        <Link to="/owners" className="d-block px-2 py-1 text-dark">Registered Owners</Link>
 
-                                        <NavDropdown.Item>
-                                            <Link to="/owners/register">Add New Owner</Link>
-                                        </NavDropdown.Item>
+                                        <Link to="/owners/register" className="d-block px-2 py-1 text-dark">Add New Owner</Link>
 
-                                        <NavDropdown.Divider />
-                                        <NavDropdown.Item href="/owners/import">Import Owners</NavDropdown.Item>
-                                        <NavDropdown.Item href="/owners/export">Export Owners</NavDropdown.Item>
                                     </NavDropdown>
                                 </Nav>
 
@@ -84,13 +68,9 @@ class App extends Component {
                                 <Nav variant="pills">
                                     <NavDropdown title="Account">
 
-                                        <NavDropdown.Item>
-                                            <Link to="/account/settings">Settings</Link>
-                                        </NavDropdown.Item>
+                                        <Link to="/account/settings" className="d-block px-2 py-1 text-dark">Settings</Link>
 
-                                        <NavDropdown.Item>
-                                            <Link to="/account/logout">Logout</Link>
-                                        </NavDropdown.Item>
+                                        <Link to="/account/logout" className="d-block px-2 py-1 text-dark">Logout</Link>
 
                                     </NavDropdown>
                                 </Nav>
@@ -107,8 +87,6 @@ class App extends Component {
                     <Route path="/owners" exact component={OwnerList}></Route>
                     <Route path="/owners/edit/:id" component={EditOwner}></Route>
                     <Route path="/owners/register" component={RegisterOwner}></Route>
-
-                    <Route path="/pets/import" component={ImportPet}></Route>
                 </main>
 
                 <footer className="mt-5 pt-4 pb-4">
