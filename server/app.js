@@ -2,13 +2,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const multer = require('multer')
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://stl:stl@cluster0-p8kcd.mongodb.net/stl?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true', {
+const LISTEN_PORT = 4000;
+const DB_ADDR = 'mongodb+srv://stl:stl@cluster0-p8kcd.mongodb.net/stl?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true';
+const PHOTO_PATH = './../uploads/photo';
+
+app.listen(LISTEN_PORT, function () {
+    console.log("Server is Running on PORT: " + LISTEN_PORT);
+});
+
+mongoose.connect(DB_ADDR, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -19,25 +27,22 @@ connection.once('open', function () {
     console.log("MongoDB Database connection established Successfully.");
 });
 
-const PORT = 4000;
-app.listen(PORT, function () {
-    console.log("Server is Running on PORT: " + PORT);
-});
 
-let ownerSchema = require('./models/owner.model');
-let petSchema = require('./models/pet.model');
-let photoSchema = require('./models/pet-photo.model');
+const ownerSchema = require('./models/owner.model');
+const petSchema = require('./models/pet.model');
+const photoSchema = require('./models/pet-photo.model');
 
 const ownerRoutes = express.Router();
 const petRoutes = express.Router();
 const photoRoutes = express.Router();
+
 app.use('/owners', ownerRoutes);
 app.use('/pets', petRoutes);
 app.use('/photos', photoRoutes);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '/uploads/');
+        cb(null, PHOTO_PATH);
     },
     filename: function (req, file, cb) {
         cb(null, req.body.petPhotoName);
