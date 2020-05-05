@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PaginationInternal from './paginationInternal.component';
+import PaginationInternal from './pagination-internal.component';
 import PropTypes from 'prop-types';
 
 export default class AppPagination extends Component {

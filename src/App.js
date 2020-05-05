@@ -9,12 +9,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css"
 import logo from "./logo.png";
 
-import PetList from "./components/list-pet.component";
-import EditPet from "./components/update-pet.component";
-import RegisterPet from "./components/register-pet.component";
-import OwnerList from "./components/list-owner.component";
-import EditOwner from "./components/update-owner.component";
-import RegisterOwner from "./components/register-owner.component";
+import PetList from "./components/pet-list.component";
+import EditPet from "./components/pet-update.component";
+import RegisterPet from "./components/pet-register.component";
+import OwnerList from "./components/owner-list.component";
+import EditOwner from "./components/owner-update.component";
+import RegisterOwner from "./components/owner-register.component";
 
 class App extends Component {
     constructor(props) {

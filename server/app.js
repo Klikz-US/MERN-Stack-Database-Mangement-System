@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/stl', {
+mongoose.connect('mongodb+srv://stl:stl@cluster0-p8kcd.mongodb.net/stl?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });

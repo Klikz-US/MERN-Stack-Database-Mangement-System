@@ -7,15 +7,12 @@ let ownerSchema = new Schema(
     {
         email: {
             type: String,
-            required: true
         },
         ownerName: {
             type: String,
-            required: true
         },
         ownerPhone1: {
             type: String,
-            required: true
         },
         ownerPhone2: {
             type: String
@@ -37,26 +34,21 @@ let ownerSchema = new Schema(
         },
         ownerAddress1: {
             type: String,
-            required: true
         },
         ownerAddress2: {
             type: String
         },
         ownerCity: {
             type: String,
-            required: true
         },
         ownerState: {
             type: String,
-            required: true
         },
         ownerZip: {
             type: String,
-            required: true
         },
         ownerCountry: {
             type: String,
-            required: true
         },
         ownerSecContact: {
             type: String
