@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-window.$server_url = 'http://localhost:4000';
+window.$server_url = 'http://localhost:5005';
 
 ReactDOM.render(
     <React.StrictMode>

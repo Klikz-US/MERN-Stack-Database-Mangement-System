@@ -4,7 +4,7 @@
     "watch": true,
     "script": "./app.js",
     "sourceDir": "",
-    "logFile": "/home/klikz/logs/stl_admin_portal/server/forever.log",
-    "outFile": "/home/klikz/logs/stl_admin_portal/server/out.log",
+    "logFile": "/home/klikz/logs/stl_admin_portal/server/all.log",
+    "outFile": "/home/klikz/logs/stl_admin_portal/server/info.log",
     "errFile": "/home/klikz/logs/stl_admin_portal/server/error.log"
 }
