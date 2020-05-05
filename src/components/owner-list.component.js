@@ -30,7 +30,7 @@ export default class OwnerList extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/owners/count')
+        axios.get(window.$server_url + '/owners/count')
             .then(res => {
                 this.setState({
                     totalPages: parseInt(res.data / 20)
@@ -40,7 +40,7 @@ export default class OwnerList extends Component {
                 console.log(err);
             });
 
-        axios.get('http://localhost:4000/owners/page/1')
+        axios.get(window.$server_url + '/owners/page/1')
             .then(res => {
                 this.setState({
                     allOwners: res.data
@@ -65,7 +65,7 @@ export default class OwnerList extends Component {
     }
 
     handleNextPage(activePage) {
-        axios.get('http://localhost:4000/owners/page/' + activePage)
+        axios.get(window.$server_url + '/owners/page/' + activePage)
             .then(res => {
                 this.setState({
                     activePage,

@@ -82,7 +82,7 @@ export default class RegisterPet extends Component {
 
     onClickSubmit(values) {
         // Register Pet
-        axios.post('http://localhost:4000/pets/register', values)
+        axios.post(window.$server_url + '/pets/register', values)
             .then(res => {
                 if (this.state.petPhoto !== undefined) {
                     // Upload Pet's Photo
@@ -94,7 +94,7 @@ export default class RegisterPet extends Component {
                     photoData.append('petPhotoName', petPhotoName);
                     photoData.append('petPhotoData', this.state.petPhoto);
 
-                    axios.post('http://localhost:4000/photos/add', photoData)
+                    axios.post(window.$server_url + '/photos/add', photoData)
                         .then(res => {
                             this.props.history.push('/pets');
                         })

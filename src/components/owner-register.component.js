@@ -56,7 +56,7 @@ export default class RegisterOwner extends Component {
 
     onClickSubmit(values) {
         // Register Owner
-        axios.post('http://localhost:4000/owners/register', values)
+        axios.post(window.$server_url + '/owners/register', values)
             .then(res => {
                 this.props.history.push('/owners');
             })

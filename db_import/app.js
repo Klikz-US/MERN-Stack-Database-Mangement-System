@@ -160,7 +160,7 @@ async function start_import() {
                     ownerAddress2: '',
                     ownerCity: err.response.data.owner.city,
                     ownerState: err.response.data.owner.state,
-                    ownerZip: err.response.data.zipcode,
+                    ownerZip: err.response.data.owner.zipcode,
                     ownerCountry: err.response.data.owner.country,
                     ownerPhone2: '',
                     ownerPhone3: '',

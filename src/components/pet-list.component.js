@@ -29,7 +29,7 @@ export default class PetList extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/pets/count')
+        axios.get(window.$server_url + '/pets/count')
             .then(res => {
                 this.setState({
                     totalPages: parseInt(res.data / 20)
@@ -39,7 +39,7 @@ export default class PetList extends Component {
                 console.log(err);
             });
 
-        axios.get('http://localhost:4000/pets/page/1')
+        axios.get(window.$server_url + '/pets/page/1')
             .then(res => {
                 this.setState({
                     allPets: res.data
@@ -64,7 +64,7 @@ export default class PetList extends Component {
     }
 
     handleNextPage(activePage) {
-        axios.get('http://localhost:4000/pets/page/' + activePage)
+        axios.get(window.$server_url + '/pets/page/' + activePage)
             .then(res => {
                 this.setState({
                     activePage,

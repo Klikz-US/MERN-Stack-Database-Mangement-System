@@ -113,7 +113,7 @@ export default class RegisterPet extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/pets/' + this.props.match.params.id)
+        axios.get(window.$server_url + '/pets/' + this.props.match.params.id)
             .then(res => {
                 let petValues = res.data;
 
@@ -135,7 +135,7 @@ export default class RegisterPet extends Component {
 
                 console.log(this.state.values)
 
-                axios.get('http://localhost:4000/photos/' + petValues.microchip)
+                axios.get(window.$server_url + '/photos/' + petValues.microchip)
                     .then(res => {
                         this.setState({
                             petPhotoPreview: res.data
@@ -152,7 +152,7 @@ export default class RegisterPet extends Component {
 
     onClickSubmit(values) {
         // Update Pet
-        axios.patch('http://localhost:4000/pets/update', values)
+        axios.patch(window.$server_url + '/pets/update', values)
             .then(res => {
                 if (this.state.petPhoto !== undefined) {
                     // Upload Pet's Photo
@@ -164,7 +164,7 @@ export default class RegisterPet extends Component {
                     photoData.append('petPhotoName', petPhotoName);
                     photoData.append('petPhotoData', this.state.petPhoto);
 
-                    axios.post('http://localhost:4000/photos/add', photoData)
+                    axios.post(window.$server_url + '/photos/add', photoData)
                         .then(res => {
                             this.props.history.push('/pets');
                         })

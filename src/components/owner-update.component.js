@@ -77,7 +77,7 @@ export default class UpdateOwner extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/owners/' + this.props.match.params.id)
+        axios.get(window.$server_url + '/owners/' + this.props.match.params.id)
             .then(res => {
                 this.setState({
                     values: res.data
@@ -90,7 +90,7 @@ export default class UpdateOwner extends Component {
 
     onClickSubmit(values) {
         // Update Owner
-        axios.patch('http://localhost:4000/owners/update/' + this.state.values._id, values)
+        axios.patch(window.$server_url + '/owners/update/' + this.state.values._id, values)
             .then(res => {
                 this.props.history.push('/owners');
             })

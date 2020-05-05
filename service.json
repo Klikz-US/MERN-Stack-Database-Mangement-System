@@ -5,9 +5,9 @@
         "watch": true,
         "script": "app.js",
         "sourceDir": "./db_import",
-        "logFile": "./home/klikz/logs/stl_admin_portal/db_import/info.log",
-        "outFile": "./home/klikz/logs/stl_admin_portal/db_import/all.log",
-        "errFile": "./home/klikz/logs/stl_admin_portal/db_import/err.log"
+        "logFile": "/home/klikz/logs/stl_admin_portal/db_import/info.log",
+        "outFile": "/home/klikz/logs/stl_admin_portal/db_import/all.log",
+        "errFile": "/home/klikz/logs/stl_admin_portal/db_import/err.log"
     },
     {
         "uid": "server",
@@ -15,8 +15,8 @@
         "watch": true,
         "script": "app.js",
         "sourceDir": "./server",
-        "logFile": "./home/klikz/logs/stl_admin_portal/server/forever.log",
-        "outFile": "./home/klikz/logs/stl_admin_portal/server/out.log",
-        "errFile": "./home/klikz/logs/stl_admin_portal/server/error.log"
+        "logFile": "/home/klikz/logs/stl_admin_portal/server/forever.log",
+        "outFile": "/home/klikz/logs/stl_admin_portal/server/out.log",
+        "errFile": "/home/klikz/logs/stl_admin_portal/server/error.log"
     }
 ]
