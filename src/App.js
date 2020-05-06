@@ -2,19 +2,20 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from 'react-bootstrap/Nav'
-import NavDropdown from 'react-bootstrap/NavDropdown'
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css"
 import logo from "./logo.png";
 
 import PetList from "./components/pet-list.component";
-import EditPet from "./components/pet-update.component";
-import RegisterPet from "./components/pet-register.component";
+import PetEdit from "./components/pet-update.component";
+import PetRegister from "./components/pet-register.component";
 import OwnerList from "./components/owner-list.component";
-import EditOwner from "./components/owner-update.component";
-import RegisterOwner from "./components/owner-register.component";
+import OwnerEdit from "./components/owner-update.component";
+import OwnerRegister from "./components/owner-register.component";
+import AccountLogin from "./components/account-login.component"
 
 class App extends Component {
     constructor(props) {
@@ -42,37 +43,28 @@ class App extends Component {
                             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                             <Navbar.Collapse id="responsive-navbar-nav">
 
-                                <Nav className="mr-auto" variant="pills">
 
-                                    <NavDropdown title="Manage Pets">
 
-                                        <Link to="/pets" className="d-block px-2 py-1 text-dark">Registered Pets</Link>
+                                <Nav className="mr-auto">
 
-                                        <Link to="/pets/register" className="d-block px-2 py-1 text-dark">Register New Pet</Link>
+                                    <DropdownButton variant="danger" title="Manage Pets " className="mr-4">
+                                        <Link to="/pets" className="d-block px-3 py-2 text-dark">Registered Pets</Link>
+                                        <Link to="/pets/register" className="d-block px-3 py-2 text-dark">Register New Pet</Link>
+                                    </DropdownButton>
 
-                                    </NavDropdown>
-                                    <NavDropdown title="Manage Owners">
+                                    <DropdownButton variant="danger" title="Manage Owners ">
+                                        <Link to="/pets" className="d-block px-3 py-2 text-dark">Registered Pets</Link>
+                                        <Link to="/pets/register" className="d-block px-3 py-2 text-dark">Register New Pet</Link>
+                                    </DropdownButton>
 
-                                        <Link to="/owners" className="d-block px-2 py-1 text-dark">Registered Owners</Link>
-
-                                        <Link to="/owners/register" className="d-block px-2 py-1 text-dark">Add New Owner</Link>
-
-                                    </NavDropdown>
                                 </Nav>
 
-                                <Form inline className="mr-5" onSubmit={this.onSubmit}>
-                                    <Form.Control type="text" placeholder="Quick Search" className="mr-sm-2 text-dark border-white" />
-                                    <Button variant="outline-light">Search</Button>
-                                </Form>
+                                <Nav>
+                                    <Link to="/account/login" className="d-block px-2"><Button variant="warning">Login</Button></Link>
+                                </Nav>
 
-                                <Nav variant="pills">
-                                    <NavDropdown title="Account">
-
-                                        <Link to="/account/settings" className="d-block px-2 py-1 text-dark">Settings</Link>
-
-                                        <Link to="/account/logout" className="d-block px-2 py-1 text-dark">Logout</Link>
-
-                                    </NavDropdown>
+                                <Nav>
+                                    <Link to="/account/logout" className="d-block px-2"><Button variant="warning">Logout</Button></Link>
                                 </Nav>
 
                             </Navbar.Collapse>
@@ -82,11 +74,14 @@ class App extends Component {
 
                 <main>
                     <Route path="/pets" exact component={PetList}></Route>
-                    <Route path="/pets/edit/:id" component={EditPet}></Route>
-                    <Route path="/pets/register" component={RegisterPet}></Route>
+                    <Route path="/pets/edit/:id" exact component={PetEdit}></Route>
+                    <Route path="/pets/register" exact component={PetRegister}></Route>
+
                     <Route path="/owners" exact component={OwnerList}></Route>
-                    <Route path="/owners/edit/:id" component={EditOwner}></Route>
-                    <Route path="/owners/register" component={RegisterOwner}></Route>
+                    <Route path="/owners/edit/:id" exact component={OwnerEdit}></Route>
+                    <Route path="/owners/register" exact component={OwnerRegister}></Route>
+
+                    <Route path="/account/login" exact component={AccountLogin}></Route>
                 </main>
 
                 <footer className="mt-5 pt-4 pb-4">
@@ -97,16 +92,16 @@ class App extends Component {
                             </Col>
 
                             <Col className="border border-dark border-top-0 border-bottom-0 pb-2 mb-4">
-                                <h4 className="text-dark p-2">Quick Links</h4>
-                                <Nav.Link className="text-info" href="https://shop.savethislife.com" target="_blank">Save This Life Shopify</Nav.Link>
-                                <Nav.Link className="text-danger" href="https://shop.savethislife.com" target="_blank">Asana Dashboard</Nav.Link>
-                                <Nav.Link className="text-alert" href="https://shop.savethislife.com" target="_blank">TalkDesk</Nav.Link>
-                                <Nav.Link className="text-success" href="https://shop.savethislife.com" target="_blank">CSR Portal</Nav.Link>
-                                <Nav.Link className="text-primary" href="https://shop.savethislife.com" target="_blank">Resources</Nav.Link>
+                                <h5 className="text-dark px-2 py-0">Quick Links</h5>
+                                <Nav.Link className="text-info px-2 py-1" href="https://shop.savethislife.com" target="_blank">Save This Life Shopify</Nav.Link>
+                                <Nav.Link className="text-danger px-2 py-1" href="https://shop.savethislife.com" target="_blank">Asana Dashboard</Nav.Link>
+                                <Nav.Link className="text-alert px-2 py-1" href="https://shop.savethislife.com" target="_blank">TalkDesk</Nav.Link>
+                                <Nav.Link className="text-success px-2 py-1" href="https://shop.savethislife.com" target="_blank">CSR Portal</Nav.Link>
+                                <Nav.Link className="text-primary px-2 py-1" href="https://shop.savethislife.com" target="_blank">Resources</Nav.Link>
                             </Col>
 
                             <Col>
-                                <h4 className="text-dark p-2">Live Updates</h4>
+                                <h5 className="text-dark p-2">Live Updates</h5>
                             </Col>
 
                         </Row>

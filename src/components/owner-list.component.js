@@ -115,7 +115,6 @@ export default class OwnerList extends Component {
                         </Col>
                     </Row>
                 </Container>
-
             </Fragment>
         );
     }
