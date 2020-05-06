@@ -4,7 +4,8 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-window.$server_url = 'http://localhost:5005';
+// window.$server_url = 'https://klikz.us:8443'; // For Production
+window.$server_url = 'http://localhost:8080'; // For Development
 
 ReactDOM.render(
     <React.StrictMode>

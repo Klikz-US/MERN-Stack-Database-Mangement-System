@@ -1,3 +1,8 @@
+const HTTP_PORT = 8080;
+const HTTPS_PORT = 8443;
+const DB_ADDR = 'mongodb+srv://stl:stl@cluster0-p8kcd.mongodb.net/stl?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true';
+const PHOTO_PATH = './../uploads/photo';
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,12 +13,25 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const LISTEN_PORT = 5005;
-const DB_ADDR = 'mongodb+srv://stl:stl@cluster0-p8kcd.mongodb.net/stl?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true';
-const PHOTO_PATH = './../uploads/photo';
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const credentials = {
+    key: fs.readFileSync("./ssl/wildcard_klikz_us_private.key"),
+    cert: fs.readFileSync("./ssl/wildcard_klikz_us.crt"),
+    ca: [
+        fs.readFileSync('./ssl/CA_root.crt'),
+        fs.readFileSync('./ssl/alphasslrootcabundle.crt')
+    ]
+};
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
-app.listen(LISTEN_PORT, function () {
-    console.log("Server is Running on PORT: " + LISTEN_PORT);
+httpServer.listen(HTTP_PORT, () => {
+    console.log('HTTP Server running on port ' + HTTP_PORT);
+});
+httpsServer.listen(HTTPS_PORT, () => {
+    console.log('HTTPS Server running on port ' + HTTPS_PORT);
 });
 
 mongoose.connect(DB_ADDR, {
@@ -26,7 +44,6 @@ const connection = mongoose.connection;
 connection.once('open', function () {
     console.log("MongoDB Database connection established Successfully.");
 });
-
 
 const ownerSchema = require('./models/owner.model');
 const petSchema = require('./models/pet.model');
