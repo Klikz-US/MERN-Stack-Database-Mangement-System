@@ -1,11 +1,3 @@
-main {
-    min-height: 40vh;
-}
-
-footer {
-    background-color: #DDDDDD;
-}
-
 #responsive-navbar-nav .dropdown-toggle {
     color: rgba(255, 255, 255, 0.8);
 }

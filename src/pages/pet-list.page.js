@@ -3,25 +3,24 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Table from 'react-bootstrap/Table'
 import { Container, Row, Col } from "react-bootstrap";
-import Pagination from "./pagination.component";
+import Pagination from "../utils/pagination.utils";
 
-const Owner = props => (
+const Pet = props => (
     <tr>
-        <td><Link to={'/owners/edit/' + props.owner._id}>{props.owner.ownerName}</Link></td>
-        <td>{props.owner.email}</td>
-        <td>{props.owner.ownerPhone1}</td>
-        <td className="text-capitalize">{props.owner.ownerCity}</td>
-        <td className="text-capitalize">{props.owner.ownerState}</td>
-        <td>{props.owner.created_at_str}</td>
+        <td><Link to={'/pets/edit/' + props.pet.microchip}>{props.pet.microchip}</Link></td>
+        <td className="text-capitalize">{props.pet.membership}</td>
+        <td className="text-capitalize">{props.pet.petName}</td>
+        <td>{props.pet.email}</td>
+        <td>{props.pet.updated_at_str}</td>
     </tr>
 );
 
-export default class OwnerList extends Component {
+export default class PetList extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            allOwners: [],
+            allPets: [],
             activePage: 1,
             totalPages: 1
         }
@@ -30,7 +29,7 @@ export default class OwnerList extends Component {
     }
 
     componentDidMount() {
-        axios.get(window.$server_url + '/owners/count')
+        axios.get(window.$server_url + '/pets/count')
             .then(res => {
                 this.setState({
                     totalPages: parseInt(res.data / 20)
@@ -40,10 +39,10 @@ export default class OwnerList extends Component {
                 console.log(err);
             });
 
-        axios.get(window.$server_url + '/owners/page/1')
+        axios.get(window.$server_url + '/pets/page/1')
             .then(res => {
                 this.setState({
-                    allOwners: res.data
+                    allPets: res.data
                 });
             })
             .catch(err => {
@@ -51,25 +50,25 @@ export default class OwnerList extends Component {
             });
     }
 
-    ownerList() {
-        return this.state.allOwners.map(function (owner, index) {
-            let created_at = (new Date(owner.created_at)).toString().split(' ');
-            let created_at_obj = {
-                created_at_str: created_at[1] + " " + created_at[2] + ", " + created_at[3] + " " + created_at[4]
+    petList() {
+        return this.state.allPets.map(function (pet, index) {
+            let updated_at = (new Date(pet.updated_at)).toString().split(' ');
+            let updated_at_obj = {
+                updated_at_str: updated_at[1] + " " + updated_at[2] + ", " + updated_at[3] + " " + updated_at[4]
             }
 
             return (
-                <Owner owner={{ ...owner, ...created_at_obj }} key={index} />
+                <Pet pet={{ ...pet, ...updated_at_obj }} key={index} />
             );
         });
     }
 
     handleNextPage(activePage) {
-        axios.get(window.$server_url + '/owners/page/' + activePage)
+        axios.get(window.$server_url + '/pets/page/' + activePage)
             .then(res => {
                 this.setState({
                     activePage,
-                    allOwners: res.data
+                    allPets: res.data
                 });
             })
             .catch(err => {
@@ -82,23 +81,22 @@ export default class OwnerList extends Component {
             <Fragment>
                 <Container>
 
-                    <h1 className="m-5 text-center">Registerd Owners</h1>
+                    <h1 className="m-5 text-center">Registerd Pets</h1>
 
                     <Row>
                         <Table responsive striped>
                             <thead className="bg-danger text-white">
                                 <tr>
-                                    <th>Full Name</th>
-                                    <th>Email Address</th>
-                                    <th>Primary Phone</th>
-                                    <th>City</th>
-                                    <th>State</th>
-                                    <th>Registered Date</th>
+                                    <th>Microchip Number</th>
+                                    <th>Membership</th>
+                                    <th>Pet Name</th>
+                                    <th>Owner Email</th>
+                                    <th>Last Updated</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                {this.ownerList()}
+                                {this.petList()}
                             </tbody>
                         </Table>
                     </Row>
@@ -115,6 +113,7 @@ export default class OwnerList extends Component {
                         </Col>
                     </Row>
                 </Container>
+
             </Fragment>
         );
     }

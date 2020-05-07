@@ -1,15 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { Provider } from 'react-redux';
+
 import App from './App';
+import Store from './store'
 import * as serviceWorker from './serviceWorker';
+import './assets/index.css';
 
 // window.$server_url = 'https://klikz.us:8443'; // For Production
 window.$server_url = 'http://localhost:8080'; // For Development
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <Provider store={Store}>
+            <App />
+        </Provider>
     </React.StrictMode>,
     document.getElementById('root')
 );
