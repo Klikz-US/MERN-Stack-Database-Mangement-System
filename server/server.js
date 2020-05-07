@@ -7,8 +7,7 @@ const photo_path = process.env.PHOTO_PATH;
 const allowed_domains = ['http://portal.klikz.com', 'http://localhost:3000'];
 
 const {
-    refreshTokens, COOKIE_OPTIONS, generateToken, generateRefreshToken,
-    getCleanUser, verifyToken, clearTokens, handleResponse,
+    refreshTokens, COOKIE_OPTIONS, generateToken, generateRefreshToken, getCleanUser, verifyToken, clearTokens, handleResponse,
 } = require('./utils/token');
 
 const express = require('express');
@@ -28,7 +27,8 @@ app.use(cors({
             return callback(new Error(msg), false);
         }
         return callback(null, true);
-    }
+    },
+    credentials: true
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
