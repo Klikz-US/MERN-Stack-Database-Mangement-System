@@ -19,7 +19,7 @@ let photoSchema = new Schema(
     {
         collection: 'photos',
         timestamps: {
-            createdAt: 'create_at',
+            createdAt: 'created_at',
             updatedAt: 'updated_at'
         }
     }

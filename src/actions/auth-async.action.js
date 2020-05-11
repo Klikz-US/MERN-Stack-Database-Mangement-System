@@ -1,8 +1,8 @@
 import {
     verifyTokenStarted, verifyUserSuccess, verifyTokenEnd, userLoginStarted, userLoginFailure, userLogout
-} from "./auth.actions";
+} from "./auth.action";
 
-import { verifyTokenService, userLoginService, userLogoutService } from '../services/auth.services';
+import { verifyTokenService, userLoginService, userLogoutService } from '../services/auth.service';
 
 // handle verify token
 export const verifyTokenAsync = (silentAuth = false) => async dispatch => {
@@ -24,13 +24,13 @@ export const verifyTokenAsync = (silentAuth = false) => async dispatch => {
 }
 
 // handle user login
-export const userLoginAsync = (username, password) => async dispatch => {
+export const userLoginAsync = (email, password) => async dispatch => {
     dispatch(userLoginStarted());
 
-    const result = await userLoginService(username, password);
+    const result = await userLoginService(email, password);
 
     if (result.error) {
-        dispatch(userLoginFailure(result.response.data.message));
+        dispatch(userLoginFailure(result.response));
         return;
     }
 

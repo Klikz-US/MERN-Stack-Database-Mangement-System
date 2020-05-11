@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, Button, Form, Card } from "react-bootstrap";
 import logo from "./../assets/logo.png";
 
-import { userLoginAsync } from '../actions/auth-async.actions';
-import { useFormInput } from '../utils/forms.utils';
+import { userLoginAsync } from '../actions/auth-async.action';
+import { useFormInput } from '../utils/form-input.util';
 
 export default function AccountLogin() {
     const auth_obj = useSelector(state => state.auth);
@@ -46,7 +46,6 @@ export default function AccountLogin() {
                                         <Form.Control
                                             type="email"
                                             {...email}
-                                            autoComplete="new-password"
                                             placeholder="Enter email"
                                         />
                                     </Form.Group>
@@ -56,20 +55,19 @@ export default function AccountLogin() {
                                         <Form.Control
                                             type="password"
                                             {...password}
-                                            autoComplete="new-password"
                                             placeholder="Enter Password"
                                         />
                                     </Form.Group>
 
                                     <Button
-                                        variant="outline-primary"
+                                        variant="outline-info"
                                         onClick={handleLogin}
                                         disabled={loginLoading}
                                     >
                                         {loginLoading ? 'Loading...' : 'Login'}
                                     </Button>
                                     {loginError &&
-                                        <Form.Text className="text-muted text-danger">
+                                        <Form.Text className="text-danger">
                                             {loginError}
                                         </Form.Text>
                                     }

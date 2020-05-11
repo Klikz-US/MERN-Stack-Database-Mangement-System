@@ -1,7 +1,7 @@
 import {
     VERIFY_TOKEN_STARTED, VERIFY_USER_SUCCESS, VERIFY_TOKEN_END, USER_LOGIN_STARTED, USER_LOGIN_FAILURE, USER_LOGOUT
 } from "./env.action";
-import { setAuthToken } from "../services/auth.services";
+import { setAuthToken } from "../services/auth.service";
 
 // verify token - start
 export const verifyTokenStarted = (silentAuth = false) => {
@@ -44,7 +44,7 @@ export const verifyUserSuccess = ({ token, expiredAt, user }) => {
         payload: {
             token,
             expiredAt,
-            user
+            user,
         }
     }
 }

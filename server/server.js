@@ -95,6 +95,7 @@ const upload = multer({
 /*
  * User
  */
+
 // list of the users to be consider as a database for example
 const userList = [
     {
@@ -155,57 +156,53 @@ const authMiddleware = function (req, res, next) {
 }
 
 
-// validate user credentials
-app.post('/users/signin', function (req, res) {
-    const user = req.body.username;
-    const pwd = req.body.password;
+const userSchema = require('./models/user.model');
+const adminRoutes = express.Router();
+app.use('/', adminRoutes);
 
-    // return 400 status if username/password is not exist
-    if (!user || !pwd) {
+adminRoutes.route('/login').post(function (req, res) {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    if (!email || !password) {
         return handleResponse(req, res, 400, null, "Username and Password required.");
     }
 
-    const userData = userList.find(x => x.username === user && x.password === pwd);
+    userSchema.findOne({ 'email': email, 'password': password }, function (err, user) {
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else {
+            if (!user) {
+                res.status(401).send("Username or Password is Wrong.");
+            } else {
+                const userObj = getCleanUser(user);
+                const tokenObj = generateToken(user);
+                const refreshToken = generateRefreshToken(userObj.userId);
+                refreshTokens[refreshToken] = tokenObj.xsrfToken;
 
-    // return 401 status if the credential is not matched
-    if (!userData) {
-        return handleResponse(req, res, 401, null, "Username or Password is Wrong.");
-    }
+                res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
+                res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
 
-    // get basic user details
-    const userObj = getCleanUser(userData);
-
-    // generate access token
-    const tokenObj = generateToken(userData);
-
-    // generate refresh token
-    const refreshToken = generateRefreshToken(userObj.userId);
-
-    // refresh token list to manage the xsrf token
-    refreshTokens[refreshToken] = tokenObj.xsrfToken;
-
-    // set cookies
-    res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
-    res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
-
-    return handleResponse(req, res, 200, {
-        user: userObj,
-        token: tokenObj.token,
-        expiredAt: tokenObj.expiredAt
+                return handleResponse(req, res, 200, {
+                    user: userObj,
+                    token: tokenObj.token,
+                    expiredAt: tokenObj.expiredAt,
+                });
+            }
+        }
     });
 });
 
 
 // handle user logout
-app.post('/users/logout', (req, res) => {
+adminRoutes.route('/logout').post(function (req, res) {
     clearTokens(req, res);
     return handleResponse(req, res, 204);
 });
 
 
 // verify the token and return new tokens if it's valid
-app.post('/verifyToken', function (req, res) {
-
+adminRoutes.route('/verifyToken').post(function (req, res) {
     const { signedCookies = {} } = req;
     const { refreshToken } = signedCookies;
     if (!refreshToken) {
@@ -217,50 +214,120 @@ app.post('/verifyToken', function (req, res) {
     if (!xsrfToken || !(refreshToken in refreshTokens) || refreshTokens[refreshToken] !== xsrfToken) {
         return handleResponse(req, res, 401);
     }
-
     // verify refresh token
     verifyToken(refreshToken, '', (err, payload) => {
         if (err) {
             return handleResponse(req, res, 401);
         }
         else {
-            const userData = userList.find(x => x.userId === payload.userId);
-            if (!userData) {
-                return handleResponse(req, res, 401);
-            }
+            userSchema.findOne({ '_id': payload.userId }, function (err, userData) {
+                if (!userData) {
+                    return handleResponse(req, res, 401);
+                }
 
-            // get basic user details
-            const userObj = getCleanUser(userData);
+                // get basic user details
+                const userObj = getCleanUser(userData);
 
-            // generate access token
-            const tokenObj = generateToken(userData);
+                // generate access token
+                const tokenObj = generateToken(userData);
 
-            // refresh token list to manage the xsrf token
-            refreshTokens[refreshToken] = tokenObj.xsrfToken;
-            res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
+                // refresh token list to manage the xsrf token
+                refreshTokens[refreshToken] = tokenObj.xsrfToken;
+                res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
 
-            // return the token along with user details
-            return handleResponse(req, res, 200, {
-                user: userObj,
-                token: tokenObj.token,
-                expiredAt: tokenObj.expiredAt
+                // return the token along with user details
+                return handleResponse(req, res, 200, {
+                    user: userObj,
+                    token: tokenObj.token,
+                    expiredAt: tokenObj.expiredAt,
+                });
             });
         }
     });
-
 });
 
+const userRoutes = express.Router();
+app.use('/users', userRoutes);
 
-// get list of the users
-app.get('/users/getList', authMiddleware, (req, res) => {
-    const list = userList.map(x => {
-        const user = { ...x };
-        delete user.password;
-        return user;
+userRoutes.route('/').get(authMiddleware, (req, res) => {
+    userSchema.find(function (err, users) {
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else {
+            const userList = users.map(user => {
+                delete user.password;
+                return user;
+            });
+            return handleResponse(req, res, 200, { userList: userList });
+        }
     });
-    return handleResponse(req, res, 200, { random: Math.random(), userList: list });
 });
 
+userRoutes.route('/:_id').get(authMiddleware, (req, res) => {
+    const _id = req.params._id;
+    userSchema.findOne({ "_id": _id }, function (err, user) {
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else {
+            delete user.password;
+            return handleResponse(req, res, 200, user);
+        }
+    });
+});
+
+userRoutes.route('/add').post(authMiddleware, (req, res, next) => {
+    const email = req.body.email;
+
+    userSchema.findOne({ "email": email }, function (err, user) {
+        if (err) {
+            next(err);
+        } else {
+            if (user) {
+                res.status(403).send("Account is already exist");
+            } else {
+                const newUser = new userSchema(req.body);
+                newUser.save().then(user => {
+                    res.json(user)
+                }).catch(err => next(err));
+            }
+        }
+    });
+});
+
+userRoutes.route('/delete/:_id').delete(authMiddleware, (req, res) => {
+    const _id = req.params._id;
+
+    userSchema.findOneAndDelete({ "_id": _id }, function (err, user) {
+        if (err) {
+            next(err);
+        } else {
+            if (!user) {
+                res.status(404).send("Account not exist");
+            } else {
+                userSchema.find(function (err, users) {
+                    if (err) {
+                        next(err);
+                    } else {
+                        res.json(users);
+                    }
+                })
+            }
+        }
+    })
+});
+
+userRoutes.route('/update/:_id').patch(authMiddleware, (req, res) => {
+    const _id = req.params._id;
+    const updateUser = req.body;
+    userSchema.findOneAndUpdate({ "_id": _id }, updateUser, function (err, user) {
+        if (err) {
+            res.status(500).send({ get_error: err });
+        } else if (user) {
+            delete user.password;
+            return handleResponse(req, res, 200, user);
+        }
+    });
+});
 
 /*
  * For Pets
@@ -412,7 +479,7 @@ petRoutes.route('/register').post(function (req, res, next) {
         },
         function (err, owner) {
             if (err) {
-                res.status(500).send({ get_error: err });
+                next(err);
             } else {
                 if (!owner) {
                     newOwner.save();

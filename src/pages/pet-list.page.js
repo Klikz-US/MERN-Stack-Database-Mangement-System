@@ -1,9 +1,9 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Table from 'react-bootstrap/Table'
 import { Container, Row, Col } from "react-bootstrap";
-import Pagination from "../utils/pagination.utils";
+import Pagination from "../utils/pagination.util";
 
 const Pet = props => (
     <tr>
@@ -29,20 +29,20 @@ export default class PetList extends Component {
     }
 
     componentDidMount() {
-        axios.get(window.$server_url + '/pets/count')
+        axios.get(window.$server_url + '/pets/page/1')
             .then(res => {
                 this.setState({
-                    totalPages: parseInt(res.data / 20)
+                    allPets: res.data
                 });
             })
             .catch(err => {
                 console.log(err);
             });
 
-        axios.get(window.$server_url + '/pets/page/1')
+        axios.get(window.$server_url + '/pets/count')
             .then(res => {
                 this.setState({
-                    allPets: res.data
+                    totalPages: parseInt(res.data / 20)
                 });
             })
             .catch(err => {
@@ -78,43 +78,39 @@ export default class PetList extends Component {
 
     render() {
         return (
-            <Fragment>
-                <Container>
+            <Container>
+                <h1 className="m-5 text-center">Registerd Pets</h1>
 
-                    <h1 className="m-5 text-center">Registerd Pets</h1>
+                <Row>
+                    <Table responsive striped>
+                        <thead className="bg-danger text-white">
+                            <tr>
+                                <th>Microchip Number</th>
+                                <th>Membership</th>
+                                <th>Pet Name</th>
+                                <th>Owner Email</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
 
-                    <Row>
-                        <Table responsive striped>
-                            <thead className="bg-danger text-white">
-                                <tr>
-                                    <th>Microchip Number</th>
-                                    <th>Membership</th>
-                                    <th>Pet Name</th>
-                                    <th>Owner Email</th>
-                                    <th>Last Updated</th>
-                                </tr>
-                            </thead>
+                        <tbody>
+                            {this.petList()}
+                        </tbody>
+                    </Table>
+                </Row>
 
-                            <tbody>
-                                {this.petList()}
-                            </tbody>
-                        </Table>
-                    </Row>
-
-                    <Row className="mt-4">
-                        <Col>
-                            {this.state.totalPages > 1 &&
-                                <Pagination
-                                    totalPages={this.state.totalPages}
-                                    currentPage={this.state.activePage}
-                                    onChange={this.handleNextPage}
-                                />
-                            }
-                        </Col>
-                    </Row>
-                </Container>
-
-            </Fragment>
+                <Row className="mt-4">
+                    <Col>
+                        {this.state.totalPages > 1 &&
+                            <Pagination
+                                totalPages={this.state.totalPages}
+                                currentPage={this.state.activePage}
+                                onChange={this.handleNextPage}
+                            />
+                        }
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }

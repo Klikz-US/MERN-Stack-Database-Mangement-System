@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Table from 'react-bootstrap/Table'
 import { Container, Row, Col } from "react-bootstrap";
-import Pagination from "../utils/pagination.utils";
+import Pagination from "../utils/pagination.util";
 
 const Owner = props => (
     <tr>
@@ -30,20 +30,20 @@ export default class OwnerList extends Component {
     }
 
     componentDidMount() {
-        axios.get(window.$server_url + '/owners/count')
+        axios.get(window.$server_url + '/owners/page/1')
             .then(res => {
                 this.setState({
-                    totalPages: parseInt(res.data / 20)
+                    allOwners: res.data
                 });
             })
             .catch(err => {
                 console.log(err);
             });
 
-        axios.get(window.$server_url + '/owners/page/1')
+        axios.get(window.$server_url + '/owners/count')
             .then(res => {
                 this.setState({
-                    allOwners: res.data
+                    totalPages: parseInt(res.data / 20)
                 });
             })
             .catch(err => {

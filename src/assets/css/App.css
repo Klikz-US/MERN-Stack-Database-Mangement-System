@@ -9,3 +9,19 @@
 .fileContainer .uploadPictureContainer {
     width: 100% !important;
 }
+
+.dropdown-toggle.btn {
+    width: 160px;
+}
+
+.dropdown-menu.show a {
+    text-decoration: none;
+}
+
+.dropdown-menu.show a:hover {
+    background-color: #bd2130aa;
+}
+
+.dropdown-menu.show a:active {
+    background-color: #bd2130;
+}

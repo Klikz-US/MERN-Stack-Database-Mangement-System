@@ -18,19 +18,19 @@ export const verifyTokenService = async () => {
     } catch (err) {
         return {
             error: true,
-            response: err.response
+            response: err.message
         };
     }
 }
 
 // user login API to validate the credential
-export const userLoginService = async (username, password) => {
+export const userLoginService = async (email, password) => {
     try {
-        return await axios.post(`${window.$server_url}/users/signin`, { username, password });
+        return await axios.post(`${window.$server_url}/login`, { email, password });
     } catch (err) {
         return {
             error: true,
-            response: err.response
+            response: err.message
         };
     }
 }
@@ -38,11 +38,11 @@ export const userLoginService = async (username, password) => {
 // manage user logout
 export const userLogoutService = async () => {
     try {
-        return await axios.post(`${window.$server_url}/users/logout`);
+        return await axios.post(`${window.$server_url}/logout`);
     } catch (err) {
         return {
             error: true,
-            response: err.response
+            response: err.message
         };
     }
 }
