@@ -1,3 +1,6 @@
+# MERN Stack Database Portal Management System.
+* React, Redux, Express, Node, MongoDB *
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
