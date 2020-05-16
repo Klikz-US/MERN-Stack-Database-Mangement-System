@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
-
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 import { Container, Row } from "react-bootstrap";
-import Table from 'react-bootstrap/Table';
+import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
 
-import { userGetListService } from './../services/user.service';
-import { verifyTokenAsync, userLogoutAsync } from '../actions/auth-async.action';
-import { setAuthToken } from '../services/auth.service';
-import { userDeleteService } from '../services/user.service';
+import { userGetListService } from "./../services/user.service";
+import {
+    verifyTokenAsync,
+    userLogoutAsync,
+} from "../actions/auth-async.action";
+import { setAuthToken } from "../services/auth.service";
+import { userDeleteService } from "../services/user.service";
 
 import { MdPhoneForwarded } from "react-icons/md";
 import { FaEnvelopeOpenText } from "react-icons/fa";
@@ -19,7 +21,7 @@ export default function UserList() {
     /*
      * Private Page Token Verification Module.
      */
-    const auth_obj = useSelector(state => state.auth);
+    const auth_obj = useSelector((state) => state.auth);
     const { token, expiredAt } = auth_obj;
     const dispatch = useDispatch();
     useEffect(() => {
@@ -29,12 +31,12 @@ export default function UserList() {
         }, moment(expiredAt).diff() - 10 * 1000);
         return () => {
             clearTimeout(verifyTokenTimer);
-        }
+        };
     }, [expiredAt, token, dispatch]);
     /* ----------------------- */
     const { username } = auth_obj.user;
     const [users, setUsers] = useState([]);
-    const [deleteError, setDeleteError] = useState('');
+    const [deleteError, setDeleteError] = useState("");
 
     useEffect(() => {
         async function fetchData() {
@@ -44,7 +46,8 @@ export default function UserList() {
             } else {
                 setUsers(result.data.userList);
             }
-        } fetchData();
+        }
+        fetchData();
     }, [dispatch]);
 
     const handleDelete = (_id) => {
@@ -53,34 +56,46 @@ export default function UserList() {
             if (result.error) {
                 setDeleteError(result.errMsg);
                 setTimeout(() => {
-                    setDeleteError('');
+                    setDeleteError("");
                 }, 3000);
             } else {
                 setUsers(result.data);
             }
-        } fetchData();
-    }
+        }
+        fetchData();
+    };
 
-    const User = props => (
+    const User = (props) => (
         <tr>
-            <td><Link to={'/users/edit/' + props.user._id}>{props.user.name}</Link></td>
+            <td>
+                <Link to={"/users/edit/" + props.user._id}>
+                    {props.user.name}
+                </Link>
+            </td>
             <td>{props.user.email}</td>
             <td>{props.user.phone}</td>
             <td>{props.user.role}</td>
             <td>
-                {username !== props.user.email &&
+                {username !== props.user.email && (
                     <>
-                        <a href={'tel:' + props.user.phone}><MdPhoneForwarded className='text-info mx-1' /></a>{' '}
-                        <a href={'mailto:' + props.user.email}><FaEnvelopeOpenText className='text-primary mx-1' /></a>
+                        <a href={"tel:" + props.user.phone}>
+                            <MdPhoneForwarded className="text-info mx-1" />
+                        </a>{" "}
+                        <a href={"mailto:" + props.user.email}>
+                            <FaEnvelopeOpenText className="text-primary mx-1" />
+                        </a>
                     </>
-                }
-                {!props.user.isAdmin &&
+                )}
+                {!props.user.isAdmin && (
                     <>
-                        <span onClick={() => handleDelete(props.user._id)}> <FaTrashAlt className='text-danger mx-1' /></span>
+                        <span onClick={() => handleDelete(props.user._id)}>
+                            {" "}
+                            <FaTrashAlt className="text-danger mx-1" />
+                        </span>
                     </>
-                }
+                )}
             </td>
-        </tr >
+        </tr>
     );
 
     const userList = (users) => {
@@ -88,10 +103,10 @@ export default function UserList() {
             const replace_obj = {};
 
             switch (user.role) {
-                case 'admin':
+                case "admin":
                     replace_obj.role = "STL Admin";
                     break;
-                case 'rep':
+                case "rep":
                     replace_obj.role = "STL Rep";
                     break;
                 default:
@@ -99,11 +114,9 @@ export default function UserList() {
                     break;
             }
 
-            return (
-                <User user={{ ...user, ...replace_obj }} key={index} />
-            );
+            return <User user={{ ...user, ...replace_obj }} key={index} />;
         });
-    }
+    };
 
     return (
         <>
@@ -122,15 +135,15 @@ export default function UserList() {
                             </tr>
                         </thead>
 
-                        <tbody>
-                            {userList(users)}
-                        </tbody>
+                        <tbody>{userList(users)}</tbody>
                     </Table>
                 </Row>
 
-                {deleteError !== '' &&
-                    <p className="float-right text-danger mx-4">{deleteError}</p>
-                }
+                {deleteError !== "" && (
+                    <p className="float-right text-danger mx-4">
+                        {deleteError}
+                    </p>
+                )}
             </Container>
         </>
     );

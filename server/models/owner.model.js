@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
+const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const Schema = mongoose.Schema;
 
@@ -7,72 +7,72 @@ let ownerSchema = new Schema(
     {
         email: {
             type: String,
-            required: true
+            required: true,
         },
         ownerName: {
             type: String,
-            required: true
+            required: true,
         },
         ownerPhone1: {
             type: String,
-            required: true
+            required: true,
         },
         ownerPhone2: {
-            type: String
+            type: String,
         },
         ownerPhone3: {
-            type: String
+            type: String,
         },
         ownerPhone4: {
-            type: String
+            type: String,
         },
         ownerPhone5: {
-            type: String
+            type: String,
         },
         ownerPhone6: {
-            type: String
+            type: String,
         },
         ownerPhone7: {
-            type: String
+            type: String,
         },
         ownerAddress1: {
             type: String,
-            required: true
+            required: true,
         },
         ownerAddress2: {
-            type: String
+            type: String,
         },
         ownerCity: {
             type: String,
-            required: true
+            required: true,
         },
         ownerState: {
             type: String,
-            required: true
+            required: true,
         },
         ownerZip: {
             type: String,
-            required: true
+            required: true,
         },
         ownerCountry: {
             type: String,
-            required: true
+            required: true,
         },
         ownerSecContact: {
-            type: String
+            type: String,
         },
         ownerNote: {
-            type: String
-        }
+            type: String,
+        },
     },
     {
-        collection: 'owners',
+        collection: "owners",
         timestamps: {
-            createdAt: 'created_at',
-            updatedAt: 'updated_at'
-        }
+            createdAt: "created_at",
+            updatedAt: "updated_at",
+        },
     }
 );
 
 ownerSchema.plugin(mongoosePaginate);
-module.exports = mongoose.model('ownerSchema', ownerSchema);
+module.exports = mongoose.model("ownerSchema", ownerSchema);

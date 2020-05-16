@@ -1,68 +1,78 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const http_port = process.env.HTTP_PORT;
 const https_port = process.env.HTTPS_PORT;
-const db_addr = process.env.DB_ADDR;
+const db_addr = process.env.DB_ADDR_LOCAL;
 const photo_path = process.env.PHOTO_PATH;
-const allowed_domains = ['http://portal.klikz.com', 'http://localhost:3000'];
+const allowed_domains = ["http://portal.klikz.com", "http://localhost:3000"];
 
 const {
-    refreshTokens, COOKIE_OPTIONS, generateToken, generateRefreshToken, getCleanUser, verifyToken, clearTokens, handleResponse,
-} = require('./utils/token');
+    refreshTokens,
+    COOKIE_OPTIONS,
+    generateToken,
+    generateRefreshToken,
+    getCleanUser,
+    verifyToken,
+    clearTokens,
+    handleResponse,
+} = require("./utils/token");
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const cookieParser = require('cookie-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const multer = require("multer");
+const cookieParser = require("cookie-parser");
 
 const app = express();
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (!origin) return callback(null, true);
 
-        if (allowed_domains.indexOf(origin) === -1) {
-            var msg = "This site ${origin} does not have an access. Only specific domains are allowed to access it.";
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true
-}));
+            if (allowed_domains.indexOf(origin) === -1) {
+                var msg =
+                    "This site ${origin} does not have an access. Only specific domains are allowed to access it.";
+                return callback(new Error(msg), false);
+            }
+            return callback(null, true);
+        },
+        credentials: true,
+    })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
 const credentials = {
     key: fs.readFileSync("./ssl/wildcard_klikz_us_private.key"),
     cert: fs.readFileSync("./ssl/wildcard_klikz_us.crt"),
     ca: [
-        fs.readFileSync('./ssl/CA_root.crt'),
-        fs.readFileSync('./ssl/alphasslrootcabundle.crt')
-    ]
+        fs.readFileSync("./ssl/CA_root.crt"),
+        fs.readFileSync("./ssl/alphasslrootcabundle.crt"),
+    ],
 };
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(http_port, () => {
-    console.log('HTTP Server running on port ' + http_port);
+    console.log("HTTP Server running on port " + http_port);
 });
 httpsServer.listen(https_port, () => {
-    console.log('HTTPS Server running on port ' + https_port);
+    console.log("HTTPS Server running on port " + https_port);
 });
 
 mongoose.connect(db_addr, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
 });
-mongoose.set('useFindAndModify', false);
+mongoose.set("useFindAndModify", false);
 
 const connection = mongoose.connection;
-connection.once('open', function () {
+connection.once("open", function () {
     console.log("MongoDB Database connection established Successfully.");
 });
 
@@ -72,25 +82,28 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         cb(null, req.body.petPhotoName);
-    }
+    },
 });
 
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
+    if (
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/png"
+    ) {
         cb(null, true);
     } else {
         cb(null, false);
     }
-}
+};
 
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 1024 * 1024 * 5
+        fileSize: 1024 * 1024 * 5,
     },
-    fileFilter: fileFilter
+    fileFilter: fileFilter,
 });
-
 
 /*
  * User
@@ -103,36 +116,35 @@ const userList = [
         password: "clue",
         name: "Clue",
         username: "clue",
-        isAdmin: true
+        isAdmin: true,
     },
     {
         userId: "456",
         password: "mediator",
         name: "Mediator",
         username: "mediator",
-        isAdmin: true
+        isAdmin: true,
     },
     {
         userId: "789",
         password: "123456",
         name: "Clue Mediator",
         username: "cluemediator",
-        isAdmin: true
-    }
-]
-
+        isAdmin: true,
+    },
+];
 
 // middleware that checks if JWT token exists and verifies it if it does exist.
 // In all private routes, this helps to know if the request is authenticated or not.
 const authMiddleware = function (req, res, next) {
     // check header or url parameters or post parameters for token
-    var token = req.headers['authorization'];
+    var token = req.headers["authorization"];
     if (!token) return handleResponse(req, res, 401);
 
-    token = token.replace('Bearer ', '');
+    token = token.replace("Bearer ", "");
 
     // get xsrf token from the header
-    const xsrfToken = req.headers['x-xsrf-token'];
+    const xsrfToken = req.headers["x-xsrf-token"];
     if (!xsrfToken) {
         return handleResponse(req, res, 403);
     }
@@ -140,35 +152,46 @@ const authMiddleware = function (req, res, next) {
     // verify xsrf token
     const { signedCookies = {} } = req;
     const { refreshToken } = signedCookies;
-    if (!refreshToken || !(refreshToken in refreshTokens) || refreshTokens[refreshToken] !== xsrfToken) {
+    if (
+        !refreshToken ||
+        !(refreshToken in refreshTokens) ||
+        refreshTokens[refreshToken] !== xsrfToken
+    ) {
         return handleResponse(req, res, 401);
     }
 
     // verify token with secret key and xsrf token
     verifyToken(token, xsrfToken, (err, payload) => {
-        if (err)
-            return handleResponse(req, res, 401);
+        if (err) return handleResponse(req, res, 401);
         else {
             req.user = payload; //set the user to req so other routes can use it
             next();
         }
     });
-}
+};
 
-
-const userSchema = require('./models/user.model');
+const userSchema = require("./models/user.model");
 const adminRoutes = express.Router();
-app.use('/', adminRoutes);
+app.use("/", adminRoutes);
 
-adminRoutes.route('/login').post(function (req, res) {
+adminRoutes.route("/login").post(function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
 
     if (!email || !password) {
-        return handleResponse(req, res, 400, null, "Username and Password required.");
+        return handleResponse(
+            req,
+            res,
+            400,
+            null,
+            "Username and Password required."
+        );
     }
 
-    userSchema.findOne({ 'email': email, 'password': password }, function (err, user) {
+    userSchema.findOne({ email: email, password: password }, function (
+        err,
+        user
+    ) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
@@ -180,8 +203,8 @@ adminRoutes.route('/login').post(function (req, res) {
                 const refreshToken = generateRefreshToken(userObj.userId);
                 refreshTokens[refreshToken] = tokenObj.xsrfToken;
 
-                res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
-                res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
+                res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
+                res.cookie("XSRF-TOKEN", tokenObj.xsrfToken);
 
                 return handleResponse(req, res, 200, {
                     user: userObj,
@@ -193,16 +216,14 @@ adminRoutes.route('/login').post(function (req, res) {
     });
 });
 
-
 // handle user logout
-adminRoutes.route('/logout').post(function (req, res) {
+adminRoutes.route("/logout").post(function (req, res) {
     clearTokens(req, res);
     return handleResponse(req, res, 204);
 });
 
-
 // verify the token and return new tokens if it's valid
-adminRoutes.route('/verifyToken').post(function (req, res) {
+adminRoutes.route("/verifyToken").post(function (req, res) {
     const { signedCookies = {} } = req;
     const { refreshToken } = signedCookies;
     if (!refreshToken) {
@@ -210,17 +231,23 @@ adminRoutes.route('/verifyToken').post(function (req, res) {
     }
 
     // verify xsrf token
-    const xsrfToken = req.headers['x-xsrf-token'];
-    if (!xsrfToken || !(refreshToken in refreshTokens) || refreshTokens[refreshToken] !== xsrfToken) {
+    const xsrfToken = req.headers["x-xsrf-token"];
+    if (
+        !xsrfToken ||
+        !(refreshToken in refreshTokens) ||
+        refreshTokens[refreshToken] !== xsrfToken
+    ) {
         return handleResponse(req, res, 401);
     }
     // verify refresh token
-    verifyToken(refreshToken, '', (err, payload) => {
+    verifyToken(refreshToken, "", (err, payload) => {
         if (err) {
             return handleResponse(req, res, 401);
-        }
-        else {
-            userSchema.findOne({ '_id': payload.userId }, function (err, userData) {
+        } else {
+            userSchema.findOne({ _id: payload.userId }, function (
+                err,
+                userData
+            ) {
                 if (!userData) {
                     return handleResponse(req, res, 401);
                 }
@@ -233,7 +260,7 @@ adminRoutes.route('/verifyToken').post(function (req, res) {
 
                 // refresh token list to manage the xsrf token
                 refreshTokens[refreshToken] = tokenObj.xsrfToken;
-                res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
+                res.cookie("XSRF-TOKEN", tokenObj.xsrfToken);
 
                 // return the token along with user details
                 return handleResponse(req, res, 200, {
@@ -247,14 +274,14 @@ adminRoutes.route('/verifyToken').post(function (req, res) {
 });
 
 const userRoutes = express.Router();
-app.use('/users', userRoutes);
+app.use("/users", userRoutes);
 
-userRoutes.route('/').get(authMiddleware, (req, res) => {
+userRoutes.route("/").get(authMiddleware, (req, res) => {
     userSchema.find(function (err, users) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
-            const userList = users.map(user => {
+            const userList = users.map((user) => {
                 delete user.password;
                 return user;
             });
@@ -263,9 +290,9 @@ userRoutes.route('/').get(authMiddleware, (req, res) => {
     });
 });
 
-userRoutes.route('/:_id').get(authMiddleware, (req, res) => {
+userRoutes.route("/:_id").get(authMiddleware, (req, res) => {
     const _id = req.params._id;
-    userSchema.findOne({ "_id": _id }, function (err, user) {
+    userSchema.findOne({ _id: _id }, function (err, user) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
@@ -275,10 +302,10 @@ userRoutes.route('/:_id').get(authMiddleware, (req, res) => {
     });
 });
 
-userRoutes.route('/add').post(authMiddleware, (req, res, next) => {
+userRoutes.route("/add").post(authMiddleware, (req, res, next) => {
     const email = req.body.email;
 
-    userSchema.findOne({ "email": email }, function (err, user) {
+    userSchema.findOne({ email: email }, function (err, user) {
         if (err) {
             next(err);
         } else {
@@ -286,18 +313,21 @@ userRoutes.route('/add').post(authMiddleware, (req, res, next) => {
                 res.status(403).send("Account is already exist");
             } else {
                 const newUser = new userSchema(req.body);
-                newUser.save().then(user => {
-                    res.json(user)
-                }).catch(err => next(err));
+                newUser
+                    .save()
+                    .then((user) => {
+                        res.json(user);
+                    })
+                    .catch((err) => next(err));
             }
         }
     });
 });
 
-userRoutes.route('/delete/:_id').delete(authMiddleware, (req, res) => {
+userRoutes.route("/delete/:_id").delete(authMiddleware, (req, res) => {
     const _id = req.params._id;
 
-    userSchema.findOneAndDelete({ "_id": _id }, function (err, user) {
+    userSchema.findOneAndDelete({ _id: _id }, function (err, user) {
         if (err) {
             next(err);
         } else {
@@ -310,16 +340,16 @@ userRoutes.route('/delete/:_id').delete(authMiddleware, (req, res) => {
                     } else {
                         res.json(users);
                     }
-                })
+                });
             }
         }
-    })
+    });
 });
 
-userRoutes.route('/update/:_id').patch(authMiddleware, (req, res) => {
+userRoutes.route("/update/:_id").patch(authMiddleware, (req, res) => {
     const _id = req.params._id;
     const updateUser = req.body;
-    userSchema.findOneAndUpdate({ "_id": _id }, updateUser, function (err, user) {
+    userSchema.findOneAndUpdate({ _id: _id }, updateUser, function (err, user) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else if (user) {
@@ -332,11 +362,11 @@ userRoutes.route('/update/:_id').patch(authMiddleware, (req, res) => {
 /*
  * For Pets
  */
-const petSchema = require('./models/pet.model');
+const petSchema = require("./models/pet.model");
 const petRoutes = express.Router();
-app.use('/pets', petRoutes);
+app.use("/pets", petRoutes);
 
-petRoutes.route('/').get(function (req, res) {
+petRoutes.route("/").get(function (req, res) {
     petSchema.find(function (err, allPets) {
         if (err) {
             res.status(500).send({ get_error: err });
@@ -346,17 +376,17 @@ petRoutes.route('/').get(function (req, res) {
     });
 });
 
-petRoutes.route('/count').get(function (req, res) {
+petRoutes.route("/count").get(authMiddleware, function (req, res) {
     petSchema.find().countDocuments(function (err, count) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
             res.json(count);
         }
-    })
+    });
 });
 
-petRoutes.route('/page/:pageId').get(function (req, res) {
+petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
     let pageId = req.params.pageId;
 
     petSchema.paginate(
@@ -365,22 +395,77 @@ petRoutes.route('/page/:pageId').get(function (req, res) {
             page: pageId,
             limit: 20,
             sort: {
-                updated_at: -1
-            }
+                _id: -1,
+            },
         },
         function (err, pets) {
             if (err) {
                 res.status(500).send({ get_error: err });
             } else {
-                res.json(pets.docs);
+                async function fetchOwnerNames() {
+                    const docs = pets.docs;
+                    let new_docs = [];
+                    for (let index = 0; index < 20; index++) {
+                        const email = docs[index].email;
+                        const microchip = docs[index].microchip;
+
+                        let owner = {};
+                        let ownerName = "";
+                        let photo = {};
+                        let photoPath = "";
+
+                        try {
+                            owner = await ownerSchema.findOne({
+                                email: email,
+                            });
+                        } catch (error) {
+                            return res.status(500).send({ get_error: error });
+                        }
+
+                        try {
+                            photo = await photoSchema.findOne({
+                                petMicrochip: microchip,
+                            });
+                        } catch (error) {
+                            return res.status(500).send({ get_error: error });
+                        }
+
+                        if (
+                            owner &&
+                            owner.ownerName !== null &&
+                            owner.ownerName !== undefined
+                        )
+                            ownerName = owner.ownerName;
+
+                        if (
+                            photo &&
+                            photo.petPhotoData !== null &&
+                            photo.petPhotoData !== undefined
+                        )
+                            photoPath = photo.petPhotoData;
+
+                        const new_doc = {
+                            ...docs[index]._doc,
+                            ...{
+                                ownerName: ownerName,
+                                photoPath: photoPath,
+                            },
+                        };
+
+                        new_docs.push(new_doc);
+                    }
+
+                    return res.json(new_docs);
+                }
+                fetchOwnerNames();
             }
         }
     );
 });
 
-petRoutes.route('/:microchip').get(function (req, res) {
+petRoutes.route("/:microchip").get(function (req, res) {
     let microchip = req.params.microchip;
-    petSchema.findOne({ "microchip": microchip }, function (err, pet) {
+    petSchema.findOne({ microchip: microchip }, function (err, pet) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
@@ -388,16 +473,18 @@ petRoutes.route('/:microchip').get(function (req, res) {
                 res.status(404).send("Microchip is not registered yet.");
             } else {
                 let email = pet.email;
-                ownerSchema.findOne({ "email": email }, function (err, owner) {
+                ownerSchema.findOne({ email: email }, function (err, owner) {
                     if (err) {
                         res.status(500).send({ get_error: err });
                     } else {
                         if (!owner) {
-                            res.status(404).send("Owner is not registered yet.");
+                            res.status(404).send(
+                                "Owner is not registered yet."
+                            );
                         } else {
                             const response = { ...pet._doc, ...owner._doc };
                             delete response._id;
-                            delete response.__v
+                            delete response.__v;
                             res.json(response);
                         }
                     }
@@ -407,7 +494,7 @@ petRoutes.route('/:microchip').get(function (req, res) {
     });
 });
 
-petRoutes.route('/update').patch(function (req, res) {
+petRoutes.route("/update").patch(function (req, res) {
     let email = req.body.email;
     let microchip = req.body.microchip;
 
@@ -415,12 +502,12 @@ petRoutes.route('/update').patch(function (req, res) {
 
     ownerSchema.findOneAndUpdate(
         {
-            'email': email
+            email: email,
         },
         req.body,
         {
             returnOriginal: false,
-            new: true
+            new: true,
         },
         function (err, owner) {
             if (err) {
@@ -432,12 +519,12 @@ petRoutes.route('/update').patch(function (req, res) {
 
                 petSchema.findOneAndUpdate(
                     {
-                        'microchip': microchip
+                        microchip: microchip,
                     },
                     req.body,
                     {
                         returnOriginal: false,
-                        new: true
+                        new: true,
                     },
                     function (err, pet) {
                         if (err) {
@@ -446,12 +533,10 @@ petRoutes.route('/update').patch(function (req, res) {
                             if (!pet) {
                                 res.status(404).send("Pet is not registered");
                             } else {
-                                res.json(
-                                    {
-                                        "owner": owner,
-                                        "pet": pet
-                                    }
-                                );
+                                res.json({
+                                    owner: owner,
+                                    pet: pet,
+                                });
                             }
                         }
                     }
@@ -461,7 +546,7 @@ petRoutes.route('/update').patch(function (req, res) {
     );
 });
 
-petRoutes.route('/register').post(function (req, res, next) {
+petRoutes.route("/register").post(function (req, res, next) {
     let email = req.body.email;
     let microchip = req.body.microchip;
 
@@ -470,12 +555,12 @@ petRoutes.route('/register').post(function (req, res, next) {
 
     ownerSchema.findOneAndUpdate(
         {
-            'email': email
+            email: email,
         },
         req.body,
         {
             returnOriginal: false,
-            new: true
+            new: true,
         },
         function (err, owner) {
             if (err) {
@@ -487,23 +572,26 @@ petRoutes.route('/register').post(function (req, res, next) {
 
                 petSchema.findOne(
                     {
-                        'microchip': microchip
+                        microchip: microchip,
                     },
                     function (err, pet) {
                         if (err) {
                             res.status(500).send({ get_error: err });
                         } else {
                             if (!pet) {
-                                newPet.save().then(pet => {
-                                    res.json(
-                                        {
-                                            "owner": owner,
-                                            "pet": pet
-                                        }
-                                    );
-                                }).catch(err => next(err));
+                                newPet
+                                    .save()
+                                    .then((pet) => {
+                                        res.json({
+                                            owner: owner,
+                                            pet: pet,
+                                        });
+                                    })
+                                    .catch((err) => next(err));
                             } else {
-                                res.status(403).send("Pet already has been registered.");
+                                res.status(403).send(
+                                    "Pet already has been registered."
+                                );
                             }
                         }
                     }
@@ -513,15 +601,14 @@ petRoutes.route('/register').post(function (req, res, next) {
     );
 });
 
-
 /*
  * For Owners
  */
-const ownerSchema = require('./models/owner.model');
+const ownerSchema = require("./models/owner.model");
 const ownerRoutes = express.Router();
-app.use('/owners', ownerRoutes);
+app.use("/owners", ownerRoutes);
 
-ownerRoutes.route('/').get(function (req, res) {
+ownerRoutes.route("/").get(function (req, res) {
     ownerSchema.find(function (err, allOwners) {
         if (err) {
             res.status(500).send({ get_error: err });
@@ -531,17 +618,17 @@ ownerRoutes.route('/').get(function (req, res) {
     });
 });
 
-ownerRoutes.route('/count').get(function (req, res) {
+ownerRoutes.route("/count").get(function (req, res) {
     ownerSchema.find().countDocuments(function (err, count) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
             res.json(count);
         }
-    })
+    });
 });
 
-ownerRoutes.route('/page/:pageId').get(function (req, res) {
+ownerRoutes.route("/page/:pageId").get(function (req, res) {
     let pageId = req.params.pageId;
 
     ownerSchema.paginate(
@@ -550,8 +637,8 @@ ownerRoutes.route('/page/:pageId').get(function (req, res) {
             page: pageId,
             limit: 20,
             sort: {
-                updated_at: -1
-            }
+                _id: -1,
+            },
         },
         function (err, owners) {
             if (err) {
@@ -563,31 +650,31 @@ ownerRoutes.route('/page/:pageId').get(function (req, res) {
     );
 });
 
-ownerRoutes.route('/:_id').get(function (req, res) {
+ownerRoutes.route("/:_id").get(function (req, res) {
     let _id = req.params._id;
-    ownerSchema.findOne({ "_id": _id }, function (err, owner) {
+    ownerSchema.findOne({ _id: _id }, function (err, owner) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
             if (!owner) {
                 res.status(404).send("Owner Not found");
             } else {
-                res.json(owner)
+                res.json(owner);
             }
         }
     });
 });
 
-ownerRoutes.route('/update/:_id').patch(function (req, res) {
+ownerRoutes.route("/update/:_id").patch(function (req, res) {
     let _id = req.params._id;
     ownerSchema.findOneAndUpdate(
         {
-            '_id': _id
+            _id: _id,
         },
         req.body,
         {
             returnOriginal: false,
-            new: true
+            new: true,
         },
         function (err, owner) {
             if (err) {
@@ -603,29 +690,30 @@ ownerRoutes.route('/update/:_id').patch(function (req, res) {
     );
 });
 
-ownerRoutes.route('/register').post(function (req, res) {
+ownerRoutes.route("/register").post(function (req, res) {
     let email = req.body.email;
     const newOwner = new ownerSchema(req.body);
 
     ownerSchema.findOne(
         {
-            'email': email
+            email: email,
         },
         req.body,
         {
             returnOriginal: false,
-            new: true
+            new: true,
         },
         function (err, owner) {
             if (err) {
                 res.status(500).send({ get_error: err });
             } else {
                 if (!owner) {
-                    newOwner.save()
-                        .then(owner => {
+                    newOwner
+                        .save()
+                        .then((owner) => {
                             res.json(owner);
                         })
-                        .catch(err => {
+                        .catch((err) => {
                             res.status(500).send({ get_error: err });
                         });
                 } else {
@@ -636,15 +724,14 @@ ownerRoutes.route('/register').post(function (req, res) {
     );
 });
 
-
 /*
  * For Pet Photo
  */
-const photoSchema = require('./models/photo.model');
+const photoSchema = require("./models/photo.model");
 const photoRoutes = express.Router();
-app.use('/photos', photoRoutes);
+app.use("/photos", photoRoutes);
 
-photoRoutes.route('/').get(function (req, res) {
+photoRoutes.route("/").get(function (req, res) {
     photoSchema.find(function (err, allPhotos) {
         if (err) {
             res.status(500).send({ get_error: err });
@@ -654,38 +741,44 @@ photoRoutes.route('/').get(function (req, res) {
     });
 });
 
-photoRoutes.route('/:microchip').get(function (req, res) {
+photoRoutes.route("/:microchip").get(function (req, res) {
     let microchip = req.params.microchip;
 
-    photoSchema.findOne({ 'petMicrochip': microchip }, function (err, photoData) {
+    photoSchema.findOne({ petMicrochip: microchip }, function (err, photoData) {
         if (err) {
             res.status(500).send({ get_error: err });
         } else {
             if (photoData) {
-                res.set('Content-Type', 'image/jpeg');
+                res.set("Content-Type", "image/jpeg");
                 res.send(photoData.petPhotoData);
             } else {
-                res.status(404).send("this pet's photo is not uploaded yet")
+                res.status(404).send("this pet's photo is not uploaded yet");
             }
         }
     });
 });
 
-photoRoutes.route('/add').post(upload.single('petPhotoData'), (req, res, next) => {
-    let petMicrochip = req.body.petMicrochip;
-    photoSchema.findOneAndDelete({ 'petMicrochip': petMicrochip }, function (err, photoData) { });
+photoRoutes
+    .route("/add")
+    .post(upload.single("petPhotoData"), (req, res, next) => {
+        let petMicrochip = req.body.petMicrochip;
+        photoSchema.findOneAndDelete({ petMicrochip: petMicrochip }, function (
+            err,
+            photoData
+        ) {});
 
-    const newPetPhoto = new photoSchema({
-        petMicrochip: petMicrochip,
-        petPhotoName: req.body.petPhotoName,
-        petPhotoData: req.file.path
+        const newPetPhoto = new photoSchema({
+            petMicrochip: petMicrochip,
+            petPhotoName: req.body.petPhotoName,
+            petPhotoData: req.file.path,
+        });
+
+        newPetPhoto
+            .save()
+            .then((photo) => {
+                res.json({
+                    "uploaded-photo": photo,
+                });
+            })
+            .catch((err) => next(err));
     });
-
-    newPetPhoto.save().then(photo => {
-        res.json(
-            {
-                'uploaded-photo': photo
-            }
-        )
-    }).catch(err => next(err));
-});
