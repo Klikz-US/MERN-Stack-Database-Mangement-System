@@ -25,3 +25,7 @@
 .dropdown-menu.show a:active {
     background-color: #bd2130;
 }
+
+input {
+    color: black !important;
+}

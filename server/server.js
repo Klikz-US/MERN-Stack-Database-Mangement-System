@@ -477,16 +477,10 @@ petRoutes.route("/:microchip").get(function (req, res) {
                     if (err) {
                         res.status(500).send({ get_error: err });
                     } else {
-                        if (!owner) {
-                            res.status(404).send(
-                                "Owner is not registered yet."
-                            );
-                        } else {
-                            const response = { ...pet._doc, ...owner._doc };
-                            delete response._id;
-                            delete response.__v;
-                            res.json(response);
-                        }
+                        const response = { ...pet._doc, ...owner._doc };
+                        delete response._id;
+                        delete response.__v;
+                        res.json(response);
                     }
                 });
             }
@@ -750,9 +744,9 @@ photoRoutes.route("/:microchip").get(function (req, res) {
         } else {
             if (photoData) {
                 res.set("Content-Type", "image/jpeg");
-                res.send(photoData.petPhotoData);
+                res.json(photoData.petPhotoData);
             } else {
-                res.status(404).send("this pet's photo is not uploaded yet");
+                res.json("");
             }
         }
     });
@@ -782,3 +776,89 @@ photoRoutes
             })
             .catch((err) => next(err));
     });
+
+/*
+ * Search
+ */
+const searchRoutes = express.Router();
+app.use("/search", searchRoutes);
+
+searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
+    const searchCategory = req.body.field;
+    const searchValue = req.body.value;
+
+    switch (searchCategory) {
+        case "microchip":
+            petSchema.findOne(
+                {
+                    microchip: searchValue,
+                },
+                (err, pet) => {
+                    if (err) next(err);
+                    else if (!pet)
+                        res.status(404).send("Microchip Number isn't exist");
+                    else res.json([pet]);
+                }
+            );
+            break;
+
+        case "email":
+            petSchema.findOne(
+                {
+                    email: searchValue,
+                },
+                (err, pet) => {
+                    if (err) next(err);
+                    else if (!pet)
+                        res.status(404).send("Owner Email isn't exist");
+                    else res.json([pet]);
+                }
+            );
+            break;
+
+        case "petName":
+            petSchema.find(
+                {
+                    petName: searchValue,
+                },
+                (err, pets) => {
+                    if (err) next(err);
+                    else if (!pets) res.status(404).send("petName isn't exist");
+                    else res.json(pets);
+                }
+            );
+            break;
+
+        case "ownerName":
+            petSchema.find(
+                {
+                    ownerName: searchValue,
+                },
+                (err, pets) => {
+                    if (err) next(err);
+                    else if (!pets)
+                        res.status(404).send("ownerName isn't exist");
+                    else res.json(pets);
+                }
+            );
+            break;
+
+        case "petBreed":
+            petSchema.find(
+                {
+                    petBreed: searchValue,
+                },
+                (err, pets) => {
+                    if (err) next(err);
+                    else if (!pets)
+                        res.status(404).send("petBreed isn't exist");
+                    else res.json(pets);
+                }
+            );
+            break;
+
+        default:
+            next(err);
+            break;
+    }
+});

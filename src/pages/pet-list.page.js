@@ -4,6 +4,8 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import { Container, Row, Col } from "react-bootstrap";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
 
 import {
     petGetListService,
@@ -15,7 +17,6 @@ import {
 } from "../actions/auth-async.action";
 import { setAuthToken } from "../services/auth.service";
 import Pagination from "../utils/pagination.util";
-
 import nophoto from "../assets/nophoto.png";
 
 export default function PetList() {
@@ -77,6 +78,22 @@ export default function PetList() {
         );
     };
 
+    const renderPhotoPopover = (pet) => {
+        return (
+            <Popover id={pet.microchip}>
+                <Popover.Title as="h3">Popover right</Popover.Title>
+                <Popover.Content>
+                    <img
+                        src={pet.photoPath ? pet.photoPath : nophoto}
+                        width="100%"
+                        height="auto"
+                        alt={pet.membership}
+                    />
+                </Popover.Content>
+            </Popover>
+        );
+    };
+
     const Pet = (props) => (
         <tr style={{ height: "70px" }}>
             <td>
@@ -89,23 +106,21 @@ export default function PetList() {
             <td className="text-lowercase">{props.pet.email}</td>
             <td className="text-capitalize">{props.pet.ownerName}</td>
             <td>{props.pet.registered_at}</td>
-            <td
-                className="p-0"
-                style={{
-                    backgroundPosition: "center",
-                    backgroundImage: `url(${nophoto})`,
-                    backgroundSize: "contain",
-                    backgroundRepeat: "no-repeat",
-                }}
-            >
-                <div
-                    style={{
-                        backgroundImage: `url(${props.pet.photoPath})`,
-                        backgroundPosition: "center",
-                        backgroundSize: "cover",
-                        padding: "50%",
-                    }}
-                ></div>
+            <td className="p-0">
+                <OverlayTrigger
+                    placement="left"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={renderPhotoPopover(props.pet)}
+                >
+                    <img
+                        src={
+                            props.pet.photoPath ? props.pet.photoPath : nophoto
+                        }
+                        width="70"
+                        height="70"
+                        alt={props.pet.membership}
+                    />
+                </OverlayTrigger>
             </td>
         </tr>
     );
