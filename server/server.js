@@ -410,6 +410,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
                         const microchip = docs[index].microchip;
 
                         let owner = {};
+                        let ownerId = "";
                         let ownerName = "";
                         let photo = {};
                         let photoPath = "";
@@ -434,8 +435,10 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
                             owner &&
                             owner.ownerName !== null &&
                             owner.ownerName !== undefined
-                        )
+                        ) {
+                            ownerId = owner._id;
                             ownerName = owner.ownerName;
+                        }
 
                         if (
                             photo &&
@@ -447,6 +450,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
                         const new_doc = {
                             ...docs[index]._doc,
                             ...{
+                                ownerId: ownerId,
                                 ownerName: ownerName,
                                 photoPath: photoPath,
                             },
@@ -489,55 +493,47 @@ petRoutes.route("/:microchip").get(function (req, res) {
 });
 
 petRoutes.route("/update").patch(function (req, res) {
-    let email = req.body.email;
     let microchip = req.body.microchip;
 
-    const newOwner = new ownerSchema(req.body);
-
-    ownerSchema.findOneAndUpdate(
+    petSchema.findOneAndUpdate(
         {
-            email: email,
+            microchip: microchip,
         },
         req.body,
         {
             returnOriginal: false,
             new: true,
         },
-        function (err, owner) {
+        function (err, pet) {
             if (err) {
                 res.status(500).send({ get_error: err });
             } else {
-                if (!owner) {
-                    newOwner.save();
+                if (!pet) {
+                    res.status(404).send("Pet is not registered");
+                } else {
+                    res.json({
+                        pet: pet,
+                    });
                 }
-
-                petSchema.findOneAndUpdate(
-                    {
-                        microchip: microchip,
-                    },
-                    req.body,
-                    {
-                        returnOriginal: false,
-                        new: true,
-                    },
-                    function (err, pet) {
-                        if (err) {
-                            res.status(500).send({ get_error: err });
-                        } else {
-                            if (!pet) {
-                                res.status(404).send("Pet is not registered");
-                            } else {
-                                res.json({
-                                    owner: owner,
-                                    pet: pet,
-                                });
-                            }
-                        }
-                    }
-                );
             }
         }
     );
+});
+
+petRoutes.route("/delete/:microchip").delete(authMiddleware, (req, res) => {
+    const microchip = req.params.microchip;
+
+    petSchema.findOneAndDelete({ microchip: microchip }, function (err, pet) {
+        if (err) {
+            next(err);
+        } else {
+            if (!pet) {
+                res.status(404).send("Pet not exist");
+            } else {
+                res.json(pet);
+            }
+        }
+    });
 });
 
 petRoutes.route("/register").post(function (req, res, next) {
@@ -682,6 +678,22 @@ ownerRoutes.route("/update/:_id").patch(function (req, res) {
             }
         }
     );
+});
+
+ownerRoutes.route("/delete/:_id").delete(authMiddleware, (req, res) => {
+    const _id = req.params._id;
+
+    ownerSchema.findOneAndDelete({ _id: _id }, function (err, owner) {
+        if (err) {
+            next(err);
+        } else {
+            if (!owner) {
+                res.status(404).send("Owner not exist");
+            } else {
+                res.json(owner);
+            }
+        }
+    });
 });
 
 ownerRoutes.route("/register").post(function (req, res) {
@@ -870,7 +882,11 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
                 const microchip = pets[index].microchip;
 
                 let owner = {};
+                let ownerId = "";
                 let ownerName = "";
+                let ownerPhone1 = "";
+                let ownerCity = "";
+                let ownerState = "";
                 let photo = {};
                 let photoPath = "";
 
@@ -894,8 +910,13 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
                     owner &&
                     owner.ownerName !== null &&
                     owner.ownerName !== undefined
-                )
+                ) {
+                    ownerId = owner._id;
                     ownerName = owner.ownerName;
+                    ownerPhone1 = owner.ownerPhone1;
+                    ownerState = owner.ownerState;
+                    ownerCity = owner.ownerCity;
+                }
 
                 if (
                     photo &&
@@ -907,7 +928,11 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
                 const new_doc = {
                     ...pets[index]._doc,
                     ...{
+                        ownerId: ownerId,
                         ownerName: ownerName,
+                        ownerPhone1: ownerPhone1,
+                        ownerState: ownerState,
+                        ownerCity: ownerCity,
                         photoPath: photoPath,
                     },
                 };

@@ -1,53 +1,9 @@
 import axios from "axios";
 
-export const petGetListService = async (activePage) => {
+export const ownerGetListService = async (activePage) => {
     try {
-        return await axios.get(`${window.$server_url}/pets/page/${activePage}`);
-    } catch (err) {
-        return {
-            error: true,
-            errMsg: err.message,
-        };
-    }
-};
-
-export const petGetCountService = async () => {
-    try {
-        return await axios.get(`${window.$server_url}/pets/count`);
-    } catch (err) {
-        return {
-            error: true,
-            errMsg: err.message,
-        };
-    }
-};
-
-export const petGetService = async (_id) => {
-    try {
-        return await axios.get(`${window.$server_url}/pets/${_id}`);
-    } catch (err) {
-        return {
-            error: true,
-            errMsg: err.message,
-        };
-    }
-};
-
-export const petRegisterService = async (pet) => {
-    try {
-        return await axios.post(`${window.$server_url}/pets/add`, pet);
-    } catch (err) {
-        return {
-            error: true,
-            errMsg: err.message,
-        };
-    }
-};
-
-export const petDeleteService = async (microchip) => {
-    try {
-        return await axios.delete(
-            `${window.$server_url}/pets/delete/${microchip}`
+        return await axios.get(
+            `${window.$server_url}/owners/page/${activePage}`
         );
     } catch (err) {
         return {
@@ -57,11 +13,55 @@ export const petDeleteService = async (microchip) => {
     }
 };
 
-export const petUpdateService = async (id, pet) => {
+export const ownerGetCountService = async () => {
+    try {
+        return await axios.get(`${window.$server_url}/owners/count`);
+    } catch (err) {
+        return {
+            error: true,
+            errMsg: err.message,
+        };
+    }
+};
+
+export const ownerGetService = async (_id) => {
+    try {
+        return await axios.get(`${window.$server_url}/owners/${_id}`);
+    } catch (err) {
+        return {
+            error: true,
+            errMsg: err.message,
+        };
+    }
+};
+
+export const ownerRegisterService = async (owner) => {
+    try {
+        return await axios.post(`${window.$server_url}/owners/add`, owner);
+    } catch (err) {
+        return {
+            error: true,
+            errMsg: err.message,
+        };
+    }
+};
+
+export const ownerDeleteService = async (_id) => {
+    try {
+        return await axios.delete(`${window.$server_url}/owners/delete/${_id}`);
+    } catch (err) {
+        return {
+            error: true,
+            errMsg: err.message,
+        };
+    }
+};
+
+export const ownerUpdateService = async (id, owner) => {
     try {
         return await axios.patch(
-            `${window.$server_url}/pets/update/${id}`,
-            pet
+            `${window.$server_url}/owners/update/${id}`,
+            owner
         );
     } catch (err) {
         return {

@@ -6,12 +6,14 @@ import Table from "react-bootstrap/Table";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import { FcCancel } from "react-icons/fc";
+import { MdErrorOutline } from "react-icons/md";
 
 import {
     petGetListService,
     petGetCountService,
+    petDeleteService,
 } from "./../services/pet.service";
 import { verifyTokenAsync } from "../actions/auth-async.action";
 import { setAuthToken } from "../services/auth.service";
@@ -47,6 +49,7 @@ export default function PetList() {
     const searchCategory = useFormCheck("microchip");
     const searchValue = useFormInput("");
     const [hasResult, setHasResult] = useState(false);
+    const [hasSearchError, setHasSearchError] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
@@ -77,8 +80,10 @@ export default function PetList() {
 
                 const searchResult = await searchService(searchReq);
                 if (searchResult.error) {
+                    setHasSearchError(true);
                     setHasResult(false);
                 } else {
+                    setHasSearchError(false);
                     setHasResult(true);
                     setPets(searchResult.data);
                 }
@@ -92,13 +97,37 @@ export default function PetList() {
     const handleCancel = (e) => {
         e.preventDefault();
 
+        setHasSearchError(false);
         setPets(petsDataBackup);
         setHasResult(false);
     };
 
+    const handleDelete = (microchip) => {
+        async function fetchData() {
+            const result = await petDeleteService(microchip);
+            if (result.error) {
+                console.log(result.errMsg);
+            } else {
+                async function fetchData() {
+                    const petList = await petGetListService(activePage);
+                    if (!petList.error) {
+                        setPetsDataBackup(petList.data);
+                        setPets(petList.data);
+                    }
+
+                    const petCount = await petGetCountService();
+                    if (!petCount.error)
+                        setTotalPages(parseInt(petCount.data / 20));
+                }
+                fetchData();
+            }
+        }
+        fetchData();
+    };
+
     const pagination = () => {
         async function handleNextPage(activePage) {
-            if (!petList.error) setActivePage(activePage);
+            setActivePage(activePage);
         }
 
         return (
@@ -112,8 +141,10 @@ export default function PetList() {
 
     const renderPhotoPopover = (pet) => {
         return (
-            <Popover id={pet.microchip}>
-                <Popover.Title as="h3">Popover right</Popover.Title>
+            <Popover id={pet.microchip} className="shadow">
+                <Popover.Title as="h2" className="text-center">
+                    {pet.microchip}
+                </Popover.Title>
                 <Popover.Content>
                     <img
                         src={pet.photoPath ? pet.photoPath : nophoto}
@@ -135,9 +166,20 @@ export default function PetList() {
             </td>
             <td className="text-uppercase">{props.pet.membership}</td>
             <td className="text-capitalize">{props.pet.petName}</td>
-            <td className="text-lowercase">{props.pet.email}</td>
+            <td className="text-lowercase">
+                {props.pet.ownerId !== "" && (
+                    <Link to={"/owners/edit/" + props.pet.ownerId}>
+                        {props.pet.email}
+                    </Link>
+                )}
+                {props.pet.ownerId === "" && <>{props.pet.email}</>}
+            </td>
             <td className="text-capitalize">{props.pet.ownerName}</td>
-            <td>{props.pet.registered_at}</td>
+            <td>
+                {moment(new Date(props.pet.registered_at)).format(
+                    "MMM DD, YYYY"
+                )}
+            </td>
             <td className="p-0">
                 <OverlayTrigger
                     placement="left"
@@ -150,9 +192,18 @@ export default function PetList() {
                         }
                         width="70"
                         height="70"
-                        alt={props.pet.membership}
+                        alt={props.pet.microchip}
                     />
                 </OverlayTrigger>
+            </td>
+            <td className="text-center pt-3">
+                <span
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleDelete(props.pet.microchip)}
+                >
+                    {" "}
+                    <FaTrashAlt className="text-danger mx-1" />
+                </span>
             </td>
         </tr>
     );
@@ -211,12 +262,12 @@ export default function PetList() {
                                 <Col md="3" className="pl-0">
                                     <Button
                                         variant="outline-info"
-                                        className="float-left"
+                                        className="float-left mr-1"
                                         disabled={isSearching}
                                         onClick={handleSearch}
                                     >
                                         <FaSearch className="text-danger mx-1" />
-                                    </Button>{" "}
+                                    </Button>
                                     <Button
                                         variant="outline-danger"
                                         className="float-left"
@@ -244,27 +295,40 @@ export default function PetList() {
                                 <th style={{ width: "11%", maxWidth: "11%" }}>
                                     Membership
                                 </th>
-                                <th style={{ width: "15%", maxWidth: "15%" }}>
+                                <th style={{ width: "14%", maxWidth: "14%" }}>
                                     Pet Name
                                 </th>
-                                <th style={{ width: "21%", maxWidth: "21%" }}>
+                                <th style={{ width: "20%", maxWidth: "20%" }}>
                                     Owner Email
                                 </th>
                                 <th style={{ width: "20%", maxWidth: "20%" }}>
                                     Owner Name
                                 </th>
-                                <th style={{ width: "14%", maxWidth: "14%" }}>
+                                <th style={{ width: "13%", maxWidth: "13%" }}>
                                     Registered At
                                 </th>
-                                <th style={{ width: "5%", maxWidth: "5%" }}>
+                                <th style={{ width: "4%", maxWidth: "4%" }}>
                                     Photo
+                                </th>
+                                <th style={{ width: "4%", maxWidth: "4%" }}>
+                                    Action
                                 </th>
                             </tr>
                         </thead>
 
-                        <tbody>{petList(pets)}</tbody>
+                        {!hasSearchError && <tbody>{petList(pets)}</tbody>}
                     </Table>
                 </Row>
+
+                {hasSearchError && (
+                    <Row className="justify-content-md-center my-5">
+                        <MdErrorOutline
+                            className="text-warning mr-1"
+                            size={24}
+                        />
+                        No Pet Found
+                    </Row>
+                )}
             </Container>
         </>
     );

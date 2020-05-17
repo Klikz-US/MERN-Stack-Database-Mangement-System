@@ -14,7 +14,6 @@ const CountryOptions = (props) => (
 );
 
 const microchipRegExp = /(^991\d{12}$|^990164\d{9}$|^\d{9}$|^[a-zA-Z0-9]{10}$)/;
-const zipcodeRegExp = /^\d{5}(?:[-\s]\d{4})?$/;
 
 const schema = yup.object({
     microchip: yup
@@ -39,24 +38,6 @@ const schema = yup.object({
         .string()
         .email("Invalid email address")
         .required("Email is a required field"),
-    ownerName: yup.string().required("Owner Name is a required field"),
-    ownerPhone1: yup
-        .string()
-        .phone("Phone number is not valid")
-        .required("Phone is a required field"),
-    ownerPhone2: yup.string().phone("Phone number is not valid"),
-    ownerPhone3: yup.string().phone("Phone number is not valid"),
-    ownerPhone4: yup.string().phone("Phone number is not valid"),
-    ownerPhone5: yup.string().phone("Phone number is not valid"),
-    ownerPhone6: yup.string().phone("Phone number is not valid"),
-    ownerPhone7: yup.string().phone("Phone number is not valid"),
-    ownerAddress1: yup.string().required("Address is a required field"),
-    ownerCity: yup.string().required("City is a required field"),
-    ownerState: yup.string().required("State is a required field"),
-    ownerZip: yup
-        .string()
-        .matches(zipcodeRegExp, "Invalid Zip Code.")
-        .required("Zipcode is a required field"),
 });
 
 export default class RegisterPet extends Component {
@@ -111,8 +92,6 @@ export default class RegisterPet extends Component {
             .then((res) => {
                 let petValues = res.data;
 
-                console.log(petValues);
-
                 if (
                     petValues.petBirth === null ||
                     petValues.petBirth === undefined
@@ -135,12 +114,9 @@ export default class RegisterPet extends Component {
                     values: petValues,
                 });
 
-                console.log(this.state.values);
-
                 axios
                     .get(window.$server_url + "/photos/" + petValues.microchip)
                     .then((res) => {
-                        console.log(res.data);
                         this.setState({
                             petPhotoPreview:
                                 res.data === "" ? nophoto : res.data,
@@ -237,22 +213,6 @@ export default class RegisterPet extends Component {
                         dateRV: this.state.values.dateRV,
                         implantedCompany: this.state.values.implantedCompany,
                         email: this.state.values.email,
-                        ownerName: this.state.values.ownerName,
-                        ownerPhone1: this.state.values.ownerPhone1,
-                        ownerPhone2: this.state.values.ownerPhone2,
-                        ownerPhone3: this.state.values.ownerPhone3,
-                        ownerPhone4: this.state.values.ownerPhone4,
-                        ownerPhone5: this.state.values.ownerPhone5,
-                        ownerPhone6: this.state.values.ownerPhone6,
-                        ownerPhone7: this.state.values.ownerPhone7,
-                        ownerAddress1: this.state.values.ownerAddress1,
-                        ownerAddress2: this.state.values.ownerAddress2,
-                        ownerCity: this.state.values.ownerCity,
-                        ownerState: this.state.values.ownerState,
-                        ownerZip: this.state.values.ownerZip,
-                        ownerCountry: this.state.values.ownerCountry,
-                        ownerSecContact: this.state.values.ownerSecContact,
-                        ownerNote: this.state.values.ownerNote,
                         membership: this.state.values.membership,
                     }}
                     onSubmit={(values, { setSubmitting }) => {
@@ -282,753 +242,469 @@ export default class RegisterPet extends Component {
                                                 </h5>
                                             </Card.Header>
                                             <Card.Body>
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Microchip Number
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="microchip"
-                                                        placeholder="Microchip Number"
-                                                        value={values.microchip}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.microchip &&
-                                                            !!errors.microchip
-                                                        }
-                                                        isValid={
-                                                            touched.microchip &&
-                                                            !errors.microchip
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.microchip}
-                                                    </Form.Control.Feedback>
-                                                    <Form.Text className="text-muted">
-                                                        Do not include the
-                                                        microchip type code or
-                                                        manufacturer's name or
-                                                        abbreviation.
-                                                    </Form.Text>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Name
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="petName"
-                                                        placeholder="Pet's Name"
-                                                        value={values.petName}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.petName &&
-                                                            !!errors.petName
-                                                        }
-                                                        isValid={
-                                                            touched.petName &&
-                                                            !errors.petName
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.petName}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Species
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        className="text-capitalize"
-                                                        as="select"
-                                                        name="petSpecies"
-                                                        value={values.petSpecies.toLowerCase()}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.petSpecies &&
-                                                            !!errors.petSpecies
-                                                        }
-                                                        isValid={
-                                                            touched.petSpecies &&
-                                                            !errors.petSpecies
-                                                        }
-                                                    >
-                                                        <option className="text-capitalize">
-                                                            choose one
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            dog
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            cat
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            bird
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            ferret
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            goat
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            horse
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            pig
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            rabbit
-                                                        </option>
-                                                        <option className="text-capitalize">
-                                                            snake
-                                                        </option>
-                                                    </Form.Control>
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.petSpecies}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Breed
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="petBreed"
-                                                        placeholder="Pet's Breed"
-                                                        value={values.petBreed}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.petBreed &&
-                                                            !!errors.petBreed
-                                                        }
-                                                        isValid={
-                                                            touched.petBreed &&
-                                                            !errors.petBreed
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.petBreed}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Color
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="petColor"
-                                                        placeholder="Pet's Color"
-                                                        value={values.petColor}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.petColor &&
-                                                            !!errors.petColor
-                                                        }
-                                                        isValid={
-                                                            touched.petColor &&
-                                                            !errors.petColor
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.petColor}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Gender
-                                                    </Form.Label>
-                                                    <Col className="p-0">
-                                                        <Form.Check
-                                                            className="mr-4"
-                                                            inline
-                                                            type="radio"
-                                                            label="Male"
-                                                            name="petGender"
-                                                            value="male"
-                                                            checked={
-                                                                values.petGender.toLowerCase() ===
-                                                                "male"
+                                                <Form.Group as={Row}>
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Microchip Number
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            name="microchip"
+                                                            placeholder="Microchip Number"
+                                                            value={
+                                                                values.microchip
                                                             }
                                                             onChange={
                                                                 handleChange
                                                             }
                                                             onBlur={handleBlur}
                                                             isInvalid={
-                                                                touched.petGender &&
-                                                                !!errors.petGender
+                                                                touched.microchip &&
+                                                                !!errors.microchip
                                                             }
                                                             isValid={
-                                                                touched.petGender &&
-                                                                !errors.petGender
-                                                            }
-                                                        />
-                                                        <Form.Check
-                                                            className="mr-4"
-                                                            inline
-                                                            type="radio"
-                                                            label="Female"
-                                                            name="petGender"
-                                                            value="female"
-                                                            checked={
-                                                                values.petGender.toLowerCase() ===
-                                                                "female"
-                                                            }
-                                                            onChange={
-                                                                handleChange
-                                                            }
-                                                            onBlur={handleBlur}
-                                                            isInvalid={
-                                                                touched.petGender &&
-                                                                !!errors.petGender
-                                                            }
-                                                            isValid={
-                                                                touched.petGender &&
-                                                                !errors.petGender
-                                                            }
-                                                        />
-                                                        <Form.Check
-                                                            className="mr-4"
-                                                            inline
-                                                            type="radio"
-                                                            label="Other"
-                                                            name="petGender"
-                                                            value="other"
-                                                            checked={
-                                                                values.petGender.toLowerCase() ===
-                                                                "other"
-                                                            }
-                                                            onChange={
-                                                                handleChange
-                                                            }
-                                                            onBlur={handleBlur}
-                                                            isInvalid={
-                                                                touched.petGender &&
-                                                                !!errors.petGender
-                                                            }
-                                                            isValid={
-                                                                touched.petGender &&
-                                                                !errors.petGender
+                                                                touched.microchip &&
+                                                                !errors.microchip
                                                             }
                                                         />
                                                         <Form.Control.Feedback type="invalid">
-                                                            {errors.petGender}
+                                                            {errors.microchip}
+                                                        </Form.Control.Feedback>
+                                                        <Form.Text className="text-muted">
+                                                            Do not include the
+                                                            microchip type code
+                                                            or manufacturer's
+                                                            name or
+                                                            abbreviation.
+                                                        </Form.Text>
+                                                    </Col>
+
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Email Address
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="email"
+                                                            name="email"
+                                                            placeholder="Owner's Email Address"
+                                                            value={values.email}
+                                                            onChange={
+                                                                handleChange
+                                                            }
+                                                            onBlur={handleBlur}
+                                                            isInvalid={
+                                                                touched.email &&
+                                                                !!errors.email
+                                                            }
+                                                            isValid={
+                                                                touched.email &&
+                                                                !errors.email
+                                                            }
+                                                        />
+                                                        <Form.Control.Feedback type="invalid">
+                                                            {errors.email}
+                                                        </Form.Control.Feedback>
+                                                        <Form.Text className="text-muted">
+                                                            Never share this
+                                                            email with anyone
+                                                            else.
+                                                        </Form.Text>
+                                                    </Col>
+                                                </Form.Group>
+
+                                                <Form.Group as={Row}>
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Name
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            name="petName"
+                                                            placeholder="Pet's Name"
+                                                            value={
+                                                                values.petName
+                                                            }
+                                                            onChange={
+                                                                handleChange
+                                                            }
+                                                            onBlur={handleBlur}
+                                                            isInvalid={
+                                                                touched.petName &&
+                                                                !!errors.petName
+                                                            }
+                                                            isValid={
+                                                                touched.petName &&
+                                                                !errors.petName
+                                                            }
+                                                        />
+                                                        <Form.Control.Feedback type="invalid">
+                                                            {errors.petName}
+                                                        </Form.Control.Feedback>
+                                                    </Col>
+
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Species
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            className="text-capitalize"
+                                                            as="select"
+                                                            name="petSpecies"
+                                                            value={values.petSpecies.toLowerCase()}
+                                                            onChange={
+                                                                handleChange
+                                                            }
+                                                            onBlur={handleBlur}
+                                                            isInvalid={
+                                                                touched.petSpecies &&
+                                                                !!errors.petSpecies
+                                                            }
+                                                            isValid={
+                                                                touched.petSpecies &&
+                                                                !errors.petSpecies
+                                                            }
+                                                        >
+                                                            <option className="text-capitalize">
+                                                                choose one
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                dog
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                cat
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                bird
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                ferret
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                goat
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                horse
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                pig
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                rabbit
+                                                            </option>
+                                                            <option className="text-capitalize">
+                                                                snake
+                                                            </option>
+                                                        </Form.Control>
+                                                        <Form.Control.Feedback type="invalid">
+                                                            {errors.petSpecies}
                                                         </Form.Control.Feedback>
                                                     </Col>
                                                 </Form.Group>
 
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Birthdate
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="date"
-                                                        name="petBirth"
-                                                        value={values.petBirth}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.petBirth &&
-                                                            !!errors.petBirth
-                                                        }
-                                                        isValid={
-                                                            touched.petBirth &&
-                                                            !errors.petBirth
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.petBirth}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Any Special Needs or
-                                                        Medications
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        as="textarea"
-                                                        name="specialNeeds"
-                                                        value={
-                                                            values.specialNeeds
-                                                        }
-                                                        onChange={handleChange}
-                                                    />
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Veterinary Information
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        as="textarea"
-                                                        name="vetInfo"
-                                                        value={values.vetInfo}
-                                                        onChange={handleChange}
-                                                    />
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Date of Rabies
-                                                        Vaccination
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="date"
-                                                        name="dateRV"
-                                                        value={values.dateRV}
-                                                        onChange={handleChange}
-                                                    />
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Veterinary Hospital or
-                                                        Clinic where Microchip
-                                                        was registered.
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="implantedCompany"
-                                                        placeholder="Veterinary Hospital or Clinic"
-                                                        value={
-                                                            values.implantedCompany
-                                                        }
-                                                        onChange={handleChange}
-                                                    />
-                                                    <Form.Text className="text-muted">
-                                                        Please Type Full Name as
-                                                        it appears. i.e.
-                                                        "ZEPPY's Pet Hospital"
-                                                    </Form.Text>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Pet's Photo
-                                                    </Form.Label>
-                                                    <Form.File custom>
-                                                        <Form.File.Input
-                                                            name="petPhoto"
-                                                            onChange={
-                                                                this
-                                                                    .onPetPhotoUpdate
-                                                            }
-                                                        />
-                                                        <Form.File.Label data-browse="Upload">
-                                                            Max. 512mb. Type:
-                                                            .jpg / .jpeg / .png
-                                                            / .gif
-                                                        </Form.File.Label>
-                                                    </Form.File>
-                                                </Form.Group>
-
-                                                <Image
-                                                    src={
-                                                        this.state
-                                                            .petPhotoPreview
-                                                    }
-                                                    width="100%"
-                                                    height="auto"
-                                                    thumbnail
-                                                />
-                                            </Card.Body>
-                                        </Card>
-                                    </Col>
-
-                                    <Col>
-                                        <Card className="h-100 shadow">
-                                            <Card.Header className="bg-success text-white">
-                                                <h5 className="m-0">
-                                                    Owner Information
-                                                </h5>
-                                            </Card.Header>
-                                            <Card.Body>
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Email Address
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="email"
-                                                        name="email"
-                                                        placeholder="Owner's Email Address"
-                                                        value={values.email}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.email &&
-                                                            !!errors.email
-                                                        }
-                                                        isValid={
-                                                            touched.email &&
-                                                            !errors.email
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.email}
-                                                    </Form.Control.Feedback>
-                                                    <Form.Text className="text-muted">
-                                                        We'll never share your
-                                                        email with anyone else.
-                                                    </Form.Text>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Name
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="ownerName"
-                                                        placeholder="Owner's Full Name"
-                                                        value={values.ownerName}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerName &&
-                                                            !!errors.ownerName
-                                                        }
-                                                        isValid={
-                                                            touched.ownerName &&
-                                                            !errors.ownerName
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerName}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Phone
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone1"
-                                                        placeholder="Owner's Primary Phone Number"
-                                                        value={
-                                                            values.ownerPhone1
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone1 &&
-                                                            !!errors.ownerPhone1
-                                                        }
-                                                        isValid={
-                                                            touched.ownerPhone1 &&
-                                                            !errors.ownerPhone1
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone1}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Secondary Phone
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone2"
-                                                        placeholder="Owner's Secondary Phone Number"
-                                                        value={
-                                                            values.ownerPhone2
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone2 &&
-                                                            !!errors.ownerPhone2
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone2}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Label>Address</Form.Label>
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="ownerAddress1"
-                                                        placeholder="1234 Main St"
-                                                        value={
-                                                            values.ownerAddress1
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerAddress1 &&
-                                                            !!errors.ownerAddress1
-                                                        }
-                                                        isValid={
-                                                            touched.ownerAddress1 &&
-                                                            !errors.ownerAddress1
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerAddress1}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="ownerAddress2"
-                                                        placeholder="Apartment, studio, or floor"
-                                                        value={
-                                                            values.ownerAddress2
-                                                        }
-                                                        onChange={handleChange}
-                                                    />
-                                                </Form.Group>
-
-                                                <Form.Row>
-                                                    <Form.Group as={Col}>
+                                                <Form.Group as={Row}>
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Breed
+                                                        </Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            name="ownerCity"
-                                                            placeholder="City"
+                                                            name="petBreed"
+                                                            placeholder="Pet's Breed"
                                                             value={
-                                                                values.ownerCity
+                                                                values.petBreed
                                                             }
                                                             onChange={
                                                                 handleChange
                                                             }
                                                             onBlur={handleBlur}
                                                             isInvalid={
-                                                                touched.ownerCity &&
-                                                                !!errors.ownerCity
+                                                                touched.petBreed &&
+                                                                !!errors.petBreed
                                                             }
                                                             isValid={
-                                                                touched.ownerCity &&
-                                                                !errors.ownerCity
+                                                                touched.petBreed &&
+                                                                !errors.petBreed
                                                             }
                                                         />
                                                         <Form.Control.Feedback type="invalid">
-                                                            {errors.ownerCity}
+                                                            {errors.petBreed}
                                                         </Form.Control.Feedback>
-                                                    </Form.Group>
+                                                    </Col>
 
-                                                    <Form.Group as={Col}>
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Color
+                                                        </Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            name="ownerState"
-                                                            placeholder="State"
+                                                            name="petColor"
+                                                            placeholder="Pet's Color"
                                                             value={
-                                                                values.ownerState
+                                                                values.petColor
                                                             }
                                                             onChange={
                                                                 handleChange
                                                             }
                                                             onBlur={handleBlur}
                                                             isInvalid={
-                                                                touched.ownerState &&
-                                                                !!errors.ownerState
+                                                                touched.petColor &&
+                                                                !!errors.petColor
                                                             }
                                                             isValid={
-                                                                touched.ownerState &&
-                                                                !errors.ownerState
+                                                                touched.petColor &&
+                                                                !errors.petColor
                                                             }
                                                         />
                                                         <Form.Control.Feedback type="invalid">
-                                                            {errors.ownerState}
+                                                            {errors.petColor}
                                                         </Form.Control.Feedback>
-                                                    </Form.Group>
-                                                </Form.Row>
+                                                    </Col>
+                                                </Form.Group>
 
-                                                <Form.Row>
-                                                    <Form.Group as={Col}>
+                                                <Form.Group as={Row}>
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Gender
+                                                        </Form.Label>
+                                                        <Col className="p-0">
+                                                            <Form.Check
+                                                                className="mr-4"
+                                                                inline
+                                                                type="radio"
+                                                                label="Male"
+                                                                name="petGender"
+                                                                value="male"
+                                                                checked={
+                                                                    values.petGender.toLowerCase() ===
+                                                                    "male"
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                                onBlur={
+                                                                    handleBlur
+                                                                }
+                                                                isInvalid={
+                                                                    touched.petGender &&
+                                                                    !!errors.petGender
+                                                                }
+                                                                isValid={
+                                                                    touched.petGender &&
+                                                                    !errors.petGender
+                                                                }
+                                                            />
+                                                            <Form.Check
+                                                                className="mr-4"
+                                                                inline
+                                                                type="radio"
+                                                                label="Female"
+                                                                name="petGender"
+                                                                value="female"
+                                                                checked={
+                                                                    values.petGender.toLowerCase() ===
+                                                                    "female"
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                                onBlur={
+                                                                    handleBlur
+                                                                }
+                                                                isInvalid={
+                                                                    touched.petGender &&
+                                                                    !!errors.petGender
+                                                                }
+                                                                isValid={
+                                                                    touched.petGender &&
+                                                                    !errors.petGender
+                                                                }
+                                                            />
+                                                            <Form.Check
+                                                                className="mr-4"
+                                                                inline
+                                                                type="radio"
+                                                                label="Other"
+                                                                name="petGender"
+                                                                value="other"
+                                                                checked={
+                                                                    values.petGender.toLowerCase() ===
+                                                                    "other"
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                                onBlur={
+                                                                    handleBlur
+                                                                }
+                                                                isInvalid={
+                                                                    touched.petGender &&
+                                                                    !!errors.petGender
+                                                                }
+                                                                isValid={
+                                                                    touched.petGender &&
+                                                                    !errors.petGender
+                                                                }
+                                                            />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                {
+                                                                    errors.petGender
+                                                                }
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Col>
+
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Birthdate
+                                                        </Form.Label>
                                                         <Form.Control
-                                                            type="text"
-                                                            name="ownerZip"
-                                                            placeholder="12345 (12345-6789)"
+                                                            type="date"
+                                                            name="petBirth"
                                                             value={
-                                                                values.ownerZip
+                                                                values.petBirth
                                                             }
                                                             onChange={
                                                                 handleChange
                                                             }
                                                             onBlur={handleBlur}
                                                             isInvalid={
-                                                                touched.ownerZip &&
-                                                                !!errors.ownerZip
+                                                                touched.petBirth &&
+                                                                !!errors.petBirth
                                                             }
                                                             isValid={
-                                                                touched.ownerZip &&
-                                                                !errors.ownerZip
+                                                                touched.petBirth &&
+                                                                !errors.petBirth
                                                             }
                                                         />
                                                         <Form.Control.Feedback type="invalid">
-                                                            {errors.ownerZip}
+                                                            {errors.petBirth}
                                                         </Form.Control.Feedback>
-                                                    </Form.Group>
+                                                    </Col>
+                                                </Form.Group>
 
-                                                    <Form.Group as={Col}>
-                                                        <Form.Control
-                                                            as="select"
-                                                            name="ownerCountry"
-                                                            value={
-                                                                values.ownerCountry
+                                                <Form.Group as={Row}>
+                                                    <Col>
+                                                        <Form.Label>
+                                                            Pet's Photo
+                                                        </Form.Label>
+                                                        <Form.File custom>
+                                                            <Form.File.Input
+                                                                name="petPhoto"
+                                                                onChange={
+                                                                    this
+                                                                        .onPetPhotoUpdate
+                                                                }
+                                                            />
+                                                            <Form.File.Label data-browse="Upload">
+                                                                Max. 512mb.
+                                                                Type: .jpg /
+                                                                .jpeg / .png /
+                                                                .gif
+                                                            </Form.File.Label>
+                                                        </Form.File>
+                                                        <Image
+                                                            src={
+                                                                this.state
+                                                                    .petPhotoPreview
                                                             }
-                                                            onChange={
-                                                                handleChange
-                                                            }
-                                                        >
-                                                            {this.listAllCountryOptions(
-                                                                values.ownerCountry
-                                                            )}
-                                                        </Form.Control>
-                                                    </Form.Group>
-                                                </Form.Row>
+                                                            width="100%"
+                                                            height="auto"
+                                                            thumbnail
+                                                        />
+                                                    </Col>
 
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Secondary Contact
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        name="ownerSecContact"
-                                                        placeholder="Owner's Secondary Contact Information"
-                                                        value={
-                                                            values.ownerSecContact
-                                                        }
-                                                        onChange={handleChange}
-                                                    />
+                                                    <Col>
+                                                        <Form.Group>
+                                                            <Form.Label>
+                                                                Any Special
+                                                                Needs or
+                                                                Medications
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                as="textarea"
+                                                                name="specialNeeds"
+                                                                value={
+                                                                    values.specialNeeds
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group>
+                                                            <Form.Label>
+                                                                Veterinary
+                                                                Information
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                as="textarea"
+                                                                name="vetInfo"
+                                                                value={
+                                                                    values.vetInfo
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            />
+                                                        </Form.Group>
+
+                                                        <Form.Group>
+                                                            <Form.Label>
+                                                                Date of Rabies
+                                                                Vaccination
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                type="date"
+                                                                name="dateRV"
+                                                                value={
+                                                                    values.dateRV
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            />
+                                                        </Form.Group>
+
+                                                        <Form.Group>
+                                                            <Form.Label>
+                                                                Veterinary
+                                                                Hospital or
+                                                                Clinic where
+                                                                Microchip was
+                                                                registered.
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                type="text"
+                                                                name="implantedCompany"
+                                                                placeholder="Veterinary Hospital or Clinic"
+                                                                value={
+                                                                    values.implantedCompany
+                                                                }
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            />
+                                                            <Form.Text className="text-muted">
+                                                                Please Type Full
+                                                                Name as it
+                                                                appears. i.e.
+                                                                "ZEPPY's Pet
+                                                                Hospital"
+                                                            </Form.Text>
+                                                        </Form.Group>
+                                                    </Col>
                                                 </Form.Group>
 
-                                                <Form.Label>
-                                                    Additional Phone 1
-                                                </Form.Label>
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone3"
-                                                        value={
-                                                            values.ownerPhone3
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone3 &&
-                                                            !!errors.ownerPhone3
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone3}
-                                                    </Form.Control.Feedback>
+                                                <Form.Group as={Row}>
+                                                    <Col></Col>
+
+                                                    <Col></Col>
                                                 </Form.Group>
 
-                                                <Form.Label>
-                                                    Additional Phone 2
-                                                </Form.Label>
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone4"
-                                                        value={
-                                                            values.ownerPhone4
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone4 &&
-                                                            !!errors.ownerPhone4
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone4}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
+                                                <Form.Group as={Row}>
+                                                    <Col></Col>
 
-                                                <Form.Label>
-                                                    Additional Phone 3
-                                                </Form.Label>
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone5"
-                                                        value={
-                                                            values.ownerPhone5
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone5 &&
-                                                            !!errors.ownerPhone5
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone5}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Label>
-                                                    Additional Phone 4
-                                                </Form.Label>
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone6"
-                                                        value={
-                                                            values.ownerPhone6
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone6 &&
-                                                            !!errors.ownerPhone6
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone6}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Label>
-                                                    Additional Phone 5
-                                                </Form.Label>
-                                                <Form.Group>
-                                                    <Form.Control
-                                                        type="phone"
-                                                        name="ownerPhone7"
-                                                        value={
-                                                            values.ownerPhone7
-                                                        }
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        isInvalid={
-                                                            touched.ownerPhone7 &&
-                                                            !!errors.ownerPhone7
-                                                        }
-                                                    />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errors.ownerPhone7}
-                                                    </Form.Control.Feedback>
-                                                </Form.Group>
-
-                                                <Form.Group>
-                                                    <Form.Label>
-                                                        Special Note
-                                                    </Form.Label>
-                                                    <Form.Control
-                                                        as="textarea"
-                                                        name="ownerNote"
-                                                        value={values.ownerNote}
-                                                        onChange={handleChange}
-                                                    />
+                                                    <Col></Col>
                                                 </Form.Group>
                                             </Card.Body>
                                         </Card>

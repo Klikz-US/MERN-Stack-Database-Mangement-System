@@ -8,6 +8,7 @@ let petSchema = new Schema(
         microchip: {
             type: String,
             required: true,
+            index: true,
         },
         petName: {
             type: String,
@@ -53,6 +54,10 @@ let petSchema = new Schema(
             type: String,
             default: "platinum",
             required: true,
+        },
+        registered_at: {
+            type: String,
+            default: new Date(),
         },
     },
     {

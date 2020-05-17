@@ -8,6 +8,7 @@ let ownerSchema = new Schema(
         email: {
             type: String,
             required: true,
+            index: true,
         },
         ownerName: {
             type: String,
@@ -63,6 +64,10 @@ let ownerSchema = new Schema(
         },
         ownerNote: {
             type: String,
+        },
+        registered_at: {
+            type: String,
+            default: new Date(),
         },
     },
     {

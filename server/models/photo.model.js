@@ -1,27 +1,28 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let photoSchema = new Schema(
     {
         petMicrochip: {
             type: String,
-            required: true
+            required: true,
+            index: true,
         },
         petPhotoName: {
             type: String,
-            required: true
+            required: true,
         },
         petPhotoData: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
     {
-        collection: 'photos',
+        collection: "photos",
         timestamps: {
-            createdAt: 'created_at',
-            updatedAt: 'updated_at'
-        }
+            createdAt: "created_at",
+            updatedAt: "updated_at",
+        },
     }
 );
-module.exports = mongoose.model('photoSchema', photoSchema);
+module.exports = mongoose.model("photoSchema", photoSchema);
