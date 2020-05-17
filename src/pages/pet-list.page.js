@@ -3,19 +3,21 @@ import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import Table from "react-bootstrap/Table";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
+import { FaSearch } from "react-icons/fa";
+import { FcCancel } from "react-icons/fc";
 
 import {
     petGetListService,
     petGetCountService,
 } from "./../services/pet.service";
-import {
-    verifyTokenAsync,
-    userLogoutAsync,
-} from "../actions/auth-async.action";
+import { verifyTokenAsync } from "../actions/auth-async.action";
 import { setAuthToken } from "../services/auth.service";
+import { searchService } from "../services/search.service";
+import { useFormInput } from "../utils/form-input.util";
+import { useFormCheck } from "../utils/form-check.util";
 import Pagination from "../utils/pagination.util";
 import nophoto from "../assets/nophoto.png";
 
@@ -38,35 +40,65 @@ export default function PetList() {
     /* ----------------------- */
 
     const [pets, setPets] = useState([]);
+    const [petsDataBackup, setPetsDataBackup] = useState(pets);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+
+    const searchCategory = useFormCheck("microchip");
+    const searchValue = useFormInput("");
+    const [hasResult, setHasResult] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             const petList = await petGetListService(activePage);
-            if (petList.error) {
-                dispatch(userLogoutAsync());
-            } else {
+            if (!petList.error) {
+                setPetsDataBackup(petList.data);
                 setPets(petList.data);
             }
 
             const petCount = await petGetCountService();
-            if (petCount.error) {
-                dispatch(userLogoutAsync());
-            } else {
-                setTotalPages(parseInt(petCount.data / 20));
-            }
+            if (!petCount.error) setTotalPages(parseInt(petCount.data / 20));
         }
         fetchData();
     }, [dispatch, activePage]);
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+
+        if (searchValue.value !== "") {
+            async function fetchData() {
+                setIsSearching(true);
+
+                const searchReq = {
+                    field: searchCategory.selected,
+                    value: searchValue.value,
+                };
+
+                const searchResult = await searchService(searchReq);
+                if (searchResult.error) {
+                    setHasResult(false);
+                } else {
+                    setHasResult(true);
+                    setPets(searchResult.data);
+                }
+
+                setIsSearching(false);
+            }
+            fetchData();
+        }
+    };
+
+    const handleCancel = (e) => {
+        e.preventDefault();
+
+        setPets(petsDataBackup);
+        setHasResult(false);
+    };
+
     const pagination = () => {
         async function handleNextPage(activePage) {
-            if (petList.error) {
-                dispatch(userLogoutAsync());
-            } else {
-                setActivePage(activePage);
-            }
+            if (!petList.error) setActivePage(activePage);
         }
 
         return (
@@ -138,6 +170,70 @@ export default function PetList() {
             <Container>
                 <h1 className="m-5 text-center">Registerd Pets</h1>
 
+                <Row className="mt-4">
+                    <Col>
+                        <Form>
+                            <Form.Group as={Row}>
+                                <Col md="4" className="pl-0">
+                                    <Form.Control
+                                        as="select"
+                                        className="text-capitalize"
+                                        {...searchCategory}
+                                    >
+                                        <option value="microchip">
+                                            Microchip
+                                        </option>
+                                        <option value="email">
+                                            Owner Email
+                                        </option>
+                                        <option value="petName">
+                                            Pet Name
+                                        </option>
+                                        <option value="ownerName">
+                                            Owner Name
+                                        </option>
+                                        <option value="petBreed">
+                                            Pet Breed
+                                        </option>
+                                        <option value="implanted">
+                                            Implanted Company
+                                        </option>
+                                    </Form.Control>
+                                </Col>
+
+                                <Col md="5" className="pl-0">
+                                    <Form.Control
+                                        type="text"
+                                        {...searchValue}
+                                    />
+                                </Col>
+
+                                <Col md="3" className="pl-0">
+                                    <Button
+                                        variant="outline-info"
+                                        className="float-left"
+                                        disabled={isSearching}
+                                        onClick={handleSearch}
+                                    >
+                                        <FaSearch className="text-danger mx-1" />
+                                    </Button>{" "}
+                                    <Button
+                                        variant="outline-danger"
+                                        className="float-left"
+                                        disabled={isSearching}
+                                        onClick={handleCancel}
+                                    >
+                                        <FcCancel className="text-info mx-1" />
+                                    </Button>
+                                </Col>
+                            </Form.Group>
+                        </Form>
+                    </Col>
+                    <Col className="px-0">
+                        {totalPages > 1 && !hasResult && pagination()}
+                    </Col>
+                </Row>
+
                 <Row>
                     <Table responsive striped>
                         <thead className="bg-danger text-white">
@@ -168,10 +264,6 @@ export default function PetList() {
 
                         <tbody>{petList(pets)}</tbody>
                     </Table>
-                </Row>
-
-                <Row className="mt-4">
-                    {totalPages > 1 && <Col>{pagination()}</Col>}
                 </Row>
             </Container>
         </>

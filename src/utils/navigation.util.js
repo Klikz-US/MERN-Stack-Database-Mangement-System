@@ -108,15 +108,6 @@ export default function Navigation() {
                                 Add New Owner
                             </Link>
                         </DropdownButton>
-
-                        <Button variant="danger" className="p-0">
-                            <Link
-                                to="/search"
-                                className="text-light text-decoration-none p-2"
-                            >
-                                Search
-                            </Link>
-                        </Button>
                     </Nav>
 
                     <Nav className="ml-auto">

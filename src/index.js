@@ -11,11 +11,11 @@ import "./assets/css/index.css";
 window.$server_url = "http://localhost:8080"; // For Development
 
 ReactDOM.render(
-    // <React.StrictMode>
-    <Provider store={Store}>
-        <App />
-    </Provider>,
-    // </React.StrictMode>,
+    <React.StrictMode>
+        <Provider store={Store}>
+            <App />
+        </Provider>
+    </React.StrictMode>,
     document.getElementById("root")
 );
 

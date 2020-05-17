@@ -12,7 +12,6 @@ import PetRegister from "../pages/pet-register.page";
 import OwnerList from "../pages/owner-list.page";
 import OwnerEdit from "../pages/owner-update.page";
 import OwnerRegister from "../pages/owner-register.page";
-import Search from "../pages/search.page";
 import UserList from "../pages/user-list.page";
 import UserRegister from "../pages/user-register.page";
 import UserEdit from "../pages/user-edit.page";
@@ -101,13 +100,6 @@ export default function STLRouter() {
                         component={Report}
                         isAuthenticated={isAuthenticated}
                         isAdmin={isAdmin}
-                    />
-
-                    <PrivateRoute
-                        path="/search"
-                        exact
-                        component={Search}
-                        isAuthenticated={isAuthenticated}
                     />
 
                     <PublicRoute

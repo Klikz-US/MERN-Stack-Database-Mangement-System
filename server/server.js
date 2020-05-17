@@ -402,7 +402,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
             if (err) {
                 res.status(500).send({ get_error: err });
             } else {
-                async function fetchOwnerNames() {
+                async function fetchRelatedData() {
                     const docs = pets.docs;
                     let new_docs = [];
                     for (let index = 0; index < 20; index++) {
@@ -457,7 +457,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
 
                     return res.json(new_docs);
                 }
-                fetchOwnerNames();
+                fetchRelatedData();
             }
         }
     );
@@ -787,78 +787,136 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
     const searchCategory = req.body.field;
     const searchValue = req.body.value;
 
-    switch (searchCategory) {
-        case "microchip":
-            petSchema.findOne(
-                {
-                    microchip: searchValue,
-                },
-                (err, pet) => {
-                    if (err) next(err);
-                    else if (!pet)
-                        res.status(404).send("Microchip Number isn't exist");
-                    else res.json([pet]);
+    async function fetchRelatedData() {
+        let pets = [];
+        switch (searchCategory) {
+            case "microchip":
+                try {
+                    pets = await petSchema.find({
+                        microchip: searchValue,
+                    });
+                } catch (error) {
+                    next(error);
                 }
-            );
-            break;
 
-        case "email":
-            petSchema.findOne(
-                {
-                    email: searchValue,
-                },
-                (err, pet) => {
-                    if (err) next(err);
-                    else if (!pet)
-                        res.status(404).send("Owner Email isn't exist");
-                    else res.json([pet]);
+                break;
+
+            case "email":
+                try {
+                    pets = await petSchema.find({
+                        email: searchValue,
+                    });
+                } catch (error) {
+                    next(error);
                 }
-            );
-            break;
 
-        case "petName":
-            petSchema.find(
-                {
-                    petName: searchValue,
-                },
-                (err, pets) => {
-                    if (err) next(err);
-                    else if (!pets) res.status(404).send("petName isn't exist");
-                    else res.json(pets);
+                break;
+
+            case "petName":
+                try {
+                    pets = await petSchema.find({
+                        petName: searchValue,
+                    });
+                } catch (error) {
+                    next(error);
                 }
-            );
-            break;
 
-        case "ownerName":
-            petSchema.find(
-                {
-                    ownerName: searchValue,
-                },
-                (err, pets) => {
-                    if (err) next(err);
-                    else if (!pets)
-                        res.status(404).send("ownerName isn't exist");
-                    else res.json(pets);
+                break;
+
+            case "ownerName":
+                try {
+                    pets = await petSchema.find({
+                        ownerName: searchValue,
+                    });
+                } catch (error) {
+                    next(error);
                 }
-            );
-            break;
 
-        case "petBreed":
-            petSchema.find(
-                {
-                    petBreed: searchValue,
-                },
-                (err, pets) => {
-                    if (err) next(err);
-                    else if (!pets)
-                        res.status(404).send("petBreed isn't exist");
-                    else res.json(pets);
+                break;
+
+            case "petBreed":
+                try {
+                    pets = await petSchema.find({
+                        petBreed: searchValue,
+                    });
+                } catch (error) {
+                    next(error);
                 }
-            );
-            break;
 
-        default:
-            next(err);
-            break;
+                break;
+
+            case "implanted":
+                try {
+                    pets = await petSchema.find({
+                        implantedCompany: searchValue,
+                    });
+                } catch (error) {
+                    next(error);
+                }
+
+                break;
+
+            default:
+                next(err);
+                break;
+        }
+
+        if (pets.length === 0) {
+            res.status(404).send("no result");
+        } else {
+            let new_docs = [];
+            for (let index = 0; index < pets.length; index++) {
+                const email = pets[index].email;
+                const microchip = pets[index].microchip;
+
+                let owner = {};
+                let ownerName = "";
+                let photo = {};
+                let photoPath = "";
+
+                try {
+                    owner = await ownerSchema.findOne({
+                        email: email,
+                    });
+                } catch (error) {
+                    return res.status(500).send({ get_error: error });
+                }
+
+                try {
+                    photo = await photoSchema.findOne({
+                        petMicrochip: microchip,
+                    });
+                } catch (error) {
+                    return res.status(500).send({ get_error: error });
+                }
+
+                if (
+                    owner &&
+                    owner.ownerName !== null &&
+                    owner.ownerName !== undefined
+                )
+                    ownerName = owner.ownerName;
+
+                if (
+                    photo &&
+                    photo.petPhotoData !== null &&
+                    photo.petPhotoData !== undefined
+                )
+                    photoPath = photo.petPhotoData;
+
+                const new_doc = {
+                    ...pets[index]._doc,
+                    ...{
+                        ownerName: ownerName,
+                        photoPath: photoPath,
+                    },
+                };
+
+                new_docs.push(new_doc);
+            }
+
+            return res.json(new_docs);
+        }
     }
+    fetchRelatedData();
 });
