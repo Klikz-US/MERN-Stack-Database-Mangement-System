@@ -2,6 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 
+import { MDBContainer, MDBSideNav } from "mdbreact";
+
 import Navigation from "../utils/navigation.util";
 import PrivateRoute from "../routes/private.route";
 import PublicRoute from "../routes/public.route";
@@ -26,11 +28,9 @@ export default function STLRouter() {
 
     return (
         <Router>
-            {isAuthenticated && (
-                <header>
-                    <Navigation />
-                </header>
-            )}
+            <MDBContainer fluid>
+                <MDBSideNav>{isAuthenticated && <Navigation />}</MDBSideNav>
+            </MDBContainer>
 
             <main className="mb-5">
                 <Switch>
