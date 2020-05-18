@@ -26,7 +26,6 @@ const DashboardPage = () => {
         };
     }, [expiredAt, token, dispatch]);
     /* ----------------------- */
-    console.log(auth_obj.user.name);
 
     return (
         <Container>

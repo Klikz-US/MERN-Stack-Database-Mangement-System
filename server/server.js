@@ -108,31 +108,6 @@ const upload = multer({
  * User
  */
 
-// list of the users to be consider as a database for example
-const userList = [
-    {
-        userId: "123",
-        password: "clue",
-        name: "Clue",
-        username: "clue",
-        isAdmin: true,
-    },
-    {
-        userId: "456",
-        password: "mediator",
-        name: "Mediator",
-        username: "mediator",
-        isAdmin: true,
-    },
-    {
-        userId: "789",
-        password: "123456",
-        name: "Clue Mediator",
-        username: "cluemediator",
-        isAdmin: true,
-    },
-];
-
 // middleware that checks if JWT token exists and verifies it if it does exist.
 // In all private routes, this helps to know if the request is authenticated or not.
 const authMiddleware = function (req, res, next) {
