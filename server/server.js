@@ -2,9 +2,9 @@ require("dotenv").config();
 
 const http_port = process.env.HTTP_PORT;
 const https_port = process.env.HTTPS_PORT;
-const db_addr = process.env.DB_ADDR_LOCAL;
+const db_addr = process.env.DB_ADDR_ONLINE;
 const photo_path = process.env.PHOTO_PATH;
-const allowed_domains = ["http://portal.klikz.com", "http://localhost:3000"];
+const allowed_domains = ["https://portal.klikz.us", "http://localhost"];
 
 const {
     refreshTokens,
@@ -31,8 +31,7 @@ app.use(
             if (!origin) return callback(null, true);
 
             if (allowed_domains.indexOf(origin) === -1) {
-                var msg =
-                    "This site ${origin} does not have an access. Only specific domains are allowed to access it.";
+                var msg = `This site ${origin} does not have an access. Only specific domains are allowed to access it.`;
                 return callback(new Error(msg), false);
             }
             return callback(null, true);

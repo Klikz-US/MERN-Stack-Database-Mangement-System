@@ -2,7 +2,7 @@
     "uid": "server",
     "append": true,
     "watch": true,
-    "script": "./app.js",
+    "script": "./server.js",
     "sourceDir": "",
     "logFile": "/home/klikz/logs/stl_admin_portal/server/all.log",
     "outFile": "/home/klikz/logs/stl_admin_portal/server/info.log",
