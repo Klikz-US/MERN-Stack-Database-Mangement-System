@@ -180,7 +180,7 @@ export default function PetList() {
                     "MMM DD, YYYY"
                 )}
             </td>
-            <td className="p-0">
+            <td className="p-1">
                 <OverlayTrigger
                     placement="left"
                     delay={{ show: 250, hide: 400 }}
@@ -190,8 +190,8 @@ export default function PetList() {
                         src={
                             props.pet.photoPath ? props.pet.photoPath : nophoto
                         }
-                        width="70"
-                        height="70"
+                        width="73"
+                        height="73"
                         alt={props.pet.microchip}
                     />
                 </OverlayTrigger>
@@ -225,7 +225,7 @@ export default function PetList() {
                     <Col>
                         <Form>
                             <Form.Group as={Row}>
-                                <Col md="4" className="pl-0">
+                                <Col md="4" className="pl-0 my-auto">
                                     <Form.Control
                                         as="select"
                                         className="text-capitalize"
@@ -252,7 +252,7 @@ export default function PetList() {
                                     </Form.Control>
                                 </Col>
 
-                                <Col md="5" className="pl-0">
+                                <Col md="5" className="pl-0 my-auto">
                                     <Form.Control
                                         type="text"
                                         {...searchValue}
@@ -262,7 +262,7 @@ export default function PetList() {
                                 <Col md="3" className="pl-0">
                                     <Button
                                         variant="outline-info"
-                                        className="float-left mr-1"
+                                        className="float-left px-2"
                                         disabled={isSearching}
                                         onClick={handleSearch}
                                     >
@@ -270,7 +270,7 @@ export default function PetList() {
                                     </Button>
                                     <Button
                                         variant="outline-danger"
-                                        className="float-left"
+                                        className="float-left px-2"
                                         disabled={isSearching}
                                         onClick={handleCancel}
                                     >

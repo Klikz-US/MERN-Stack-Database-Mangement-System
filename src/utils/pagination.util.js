@@ -79,7 +79,7 @@ export default class AppPagination extends Component {
 
         return (
             <PaginationInternal
-                className="float-right"
+                className="float-right mb-0 mt-2 border border-info shadow p-1"
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onClick={this.onClick}

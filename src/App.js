@@ -5,6 +5,10 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 import "./assets/css/App.css";
 
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "bootstrap-css-only/css/bootstrap.min.css";
+import "mdbreact/dist/css/mdb.css";
+
 import STLRouter from "./routes/router";
 import { verifyTokenAsync } from "./actions/auth-async.action";
 import { Row } from "react-bootstrap";

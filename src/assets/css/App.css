@@ -10,20 +10,32 @@
     width: 100% !important;
 }
 
-.dropdown-toggle.btn {
-    width: 160px;
-}
-
-.dropdown-menu.show a {
-    text-decoration: none;
+.dropdown-menu.show {
+    width: calc(100% - .75rem);
+    margin: .375rem !important;
+    margin-top: -.375rem !important;
 }
 
 .dropdown-menu.show a:hover {
-    background-color: #bd2130aa;
+    background-color: #ff3547 !important;
+    color: white !important;
 }
 
-.dropdown-menu.show a:active {
-    background-color: #bd2130;
+a {
+    font-weight: 400 !important;
+}
+
+table td {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+}
+
+table.table a {
+    color: #007bff !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
 }
 
 input {

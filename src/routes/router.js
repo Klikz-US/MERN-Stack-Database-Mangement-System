@@ -2,10 +2,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 
-import Navigation from "../utils/navigation.util";
+import Header from "../utils/header.util";
 import PrivateRoute from "../routes/private.route";
 import PublicRoute from "../routes/public.route";
-import FooterContent from "../utils/footer.util";
+import Footer from "../utils/footer.util";
+import Dashboard from "../pages/dashboard.page";
 import PetList from "../pages/pet-list.page";
 import PetEdit from "../pages/pet-update.page";
 import PetRegister from "../pages/pet-register.page";
@@ -26,14 +27,17 @@ export default function STLRouter() {
 
     return (
         <Router>
-            {isAuthenticated && (
-                <header>
-                    <Navigation />
-                </header>
-            )}
+            {isAuthenticated && <Header />}
 
             <main className="mb-5">
                 <Switch>
+                    <PrivateRoute
+                        path="/"
+                        exact
+                        component={Dashboard}
+                        isAuthenticated={isAuthenticated}
+                    />
+
                     <PrivateRoute
                         path="/pets"
                         exact
@@ -112,11 +116,7 @@ export default function STLRouter() {
                 </Switch>
             </main>
 
-            {isAuthenticated && (
-                <footer className="mt-auto pt-4 pb-4 bg-light shadow-lg">
-                    <FooterContent />
-                </footer>
-            )}
+            {isAuthenticated && <Footer />}
         </Router>
     );
 }

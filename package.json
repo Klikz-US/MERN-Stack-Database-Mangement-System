@@ -19,6 +19,7 @@
         "express": "^4.17.1",
         "forever": "^2.0.0",
         "formik": "^2.1.4",
+        "google-map-react": "^1.1.7",
         "jquery": "^3.5.1",
         "jsonwebtoken": "^8.5.1",
         "mdbreact": "^4.26.1",

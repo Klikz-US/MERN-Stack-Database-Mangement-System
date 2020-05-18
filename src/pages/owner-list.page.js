@@ -187,7 +187,7 @@ export default function OwnerList() {
                     <Col>
                         <Form>
                             <Form.Group as={Row}>
-                                <Col md="4" className="pl-0">
+                                <Col md="4" className="pl-0 my-auto">
                                     <Form.Control
                                         as="select"
                                         className="text-capitalize"
@@ -203,7 +203,7 @@ export default function OwnerList() {
                                     </Form.Control>
                                 </Col>
 
-                                <Col md="5" className="pl-0">
+                                <Col md="5" className="pl-0 my-auto">
                                     <Form.Control
                                         type="text"
                                         {...searchValue}
@@ -213,7 +213,7 @@ export default function OwnerList() {
                                 <Col md="3" className="pl-0">
                                     <Button
                                         variant="outline-info"
-                                        className="float-left mr-1"
+                                        className="float-left px-2"
                                         disabled={isSearching}
                                         onClick={handleSearch}
                                     >
@@ -221,7 +221,7 @@ export default function OwnerList() {
                                     </Button>
                                     <Button
                                         variant="outline-danger"
-                                        className="float-left"
+                                        className="float-left px-2"
                                         disabled={isSearching}
                                         onClick={handleCancel}
                                     >
