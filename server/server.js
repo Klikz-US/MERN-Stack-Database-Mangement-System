@@ -452,55 +452,64 @@ petRoutes.route("/register").post(function (req, res, next) {
     let email = req.body.email;
     let microchip = req.body.microchip;
 
-    const newPet = new petSchema(req.body);
     const newOwner = new ownerSchema(req.body);
 
-    ownerSchema.findOneAndUpdate(
-        {
-            email: email,
-        },
-        req.body,
-        {
-            returnOriginal: false,
-            new: true,
-        },
-        function (err, owner) {
-            if (err) {
-                next(err);
-            } else {
-                if (!owner) {
-                    newOwner.save();
+    async function save_data() {
+        try {
+            const owner = await ownerSchema.findOneAndUpdate(
+                {
+                    email: email,
+                },
+                req.body,
+                {
+                    returnOriginal: false,
+                    new: true,
                 }
+            );
 
-                petSchema.findOne(
-                    {
-                        microchip: microchip,
-                    },
-                    function (err, pet) {
-                        if (err) {
-                            next(err);
+            let ownerId = "";
+            if (!owner) {
+                const new_owner = await newOwner.save();
+                ownerId = new_owner._id;
+            } else {
+                ownerId = owner._id;
+            }
+
+            petSchema.findOne(
+                {
+                    microchip: microchip,
+                },
+                function (err, pet) {
+                    if (err) {
+                        next(err);
+                    } else {
+                        if (!pet) {
+                            const newPet = new petSchema({
+                                ...req.body,
+                                ...{ ownerId: ownerId },
+                            });
+                            newPet
+                                .save()
+                                .then((pet) => {
+                                    res.json({
+                                        owner: owner,
+                                        pet: pet,
+                                    });
+                                })
+                                .catch((err) => next(err));
                         } else {
-                            if (!pet) {
-                                newPet
-                                    .save()
-                                    .then((pet) => {
-                                        res.json({
-                                            owner: owner,
-                                            pet: pet,
-                                        });
-                                    })
-                                    .catch((err) => next(err));
-                            } else {
-                                res.status(403).send(
-                                    "Pet already has been registered."
-                                );
-                            }
+                            res.status(403).send(
+                                "Pet already has been registered."
+                            );
                         }
                     }
-                );
-            }
+                }
+            );
+        } catch (error) {
+            next(error);
         }
-    );
+    }
+    save_data();
 });
 
 /*
@@ -585,7 +594,32 @@ ownerRoutes.route("/update/:_id").patch(function (req, res, next) {
                 if (!owner) {
                     res.status(404).send("Owner Not Found");
                 } else {
-                    res.json(owner);
+                    petSchema.find(
+                        {
+                            email: owner.email,
+                        },
+                        (err, pets) => {
+                            if (err) next(err);
+                            else {
+                                if (pets) {
+                                    pets.map((pet, index) => {
+                                        let new_pet = pet;
+                                        new_pet.ownerName = owner.ownerName;
+                                        console.log(new_pet);
+                                        petSchema.findOneAndUpdate(
+                                            {
+                                                microchip: pet.microchip,
+                                            },
+                                            new_pet,
+                                            (err, updated) => {}
+                                        );
+                                    });
+                                }
+
+                                res.json(owner);
+                            }
+                        }
+                    );
                 }
             }
         }

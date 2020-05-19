@@ -50,6 +50,15 @@ let petSchema = new Schema(
             type: String,
             required: true,
         },
+        ownerId: {
+            type: String,
+        },
+        photoPath: {
+            type: String,
+        },
+        ownerName: {
+            type: String,
+        },
         membership: {
             type: String,
             default: "platinum",

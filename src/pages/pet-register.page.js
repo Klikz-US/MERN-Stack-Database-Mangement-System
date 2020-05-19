@@ -72,9 +72,23 @@ export default class RegisterPet extends Component {
     }
 
     onClickSubmit(values) {
+        let photoPath = "";
+        if (this.state.petPhoto !== undefined) {
+            photoPath =
+                "/uploads/photo/" +
+                values.microchip +
+                "." +
+                this.state.petPhoto.name.split(".")[
+                    this.state.petPhoto.name.split(".").length - 1
+                ];
+        }
+
         // Register Pet
         axios
-            .post(window.$server_url + "/pets/register", values)
+            .post(window.$server_url + "/pets/register", {
+                ...values,
+                ...{ photoPath: photoPath },
+            })
             .then((res) => {
                 if (this.state.petPhoto !== undefined) {
                     // Upload Pet's Photo
