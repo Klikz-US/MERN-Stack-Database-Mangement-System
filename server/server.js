@@ -605,7 +605,6 @@ ownerRoutes.route("/update/:_id").patch(function (req, res, next) {
                                     pets.map((pet, index) => {
                                         let new_pet = pet;
                                         new_pet.ownerName = owner.ownerName;
-                                        console.log(new_pet);
                                         petSchema.findOneAndUpdate(
                                             {
                                                 microchip: pet.microchip,

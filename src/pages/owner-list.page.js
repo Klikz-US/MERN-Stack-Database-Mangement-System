@@ -180,7 +180,7 @@ export default function OwnerList() {
                 <tr>
                     <td>
                         <Container
-                            className="py-5 text-center"
+                            className="my-5 py-5 text-center"
                             style={{ position: "absolute" }}
                         >
                             <ClipLoader
