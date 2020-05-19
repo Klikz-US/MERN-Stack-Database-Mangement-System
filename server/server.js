@@ -118,7 +118,7 @@ const authMiddleware = function (req, res, next) {
     token = token.replace("Bearer ", "");
 
     // get xsrf token from the header
-    const xsrfToken = req.headers["x-xsrf-token"];
+    const xsrfToken = req.cookies["XSRF-TOKEN"];
     if (!xsrfToken) {
         return handleResponse(req, res, 403);
     }
@@ -205,7 +205,8 @@ adminRoutes.route("/verifyToken").post(function (req, res) {
     }
 
     // verify xsrf token
-    const xsrfToken = req.headers["x-xsrf-token"];
+    const xsrfToken = req.cookies["XSRF-TOKEN"];
+
     if (
         !xsrfToken ||
         !(refreshToken in refreshTokens) ||
