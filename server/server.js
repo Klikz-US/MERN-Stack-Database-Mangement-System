@@ -148,7 +148,7 @@ const userSchema = require("./models/user.model");
 const adminRoutes = express.Router();
 app.use("/", adminRoutes);
 
-adminRoutes.route("/login").post(function (req, res) {
+adminRoutes.route("/login").post(function (req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -167,7 +167,7 @@ adminRoutes.route("/login").post(function (req, res) {
         user
     ) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             if (!user) {
                 res.status(401).send("Username or Password is Wrong.");
@@ -251,10 +251,10 @@ adminRoutes.route("/verifyToken").post(function (req, res) {
 const userRoutes = express.Router();
 app.use("/users", userRoutes);
 
-userRoutes.route("/").get(authMiddleware, (req, res) => {
+userRoutes.route("/").get(authMiddleware, (req, res, next) => {
     userSchema.find(function (err, users) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             const userList = users.map((user) => {
                 delete user.password;
@@ -265,11 +265,11 @@ userRoutes.route("/").get(authMiddleware, (req, res) => {
     });
 });
 
-userRoutes.route("/:_id").get(authMiddleware, (req, res) => {
+userRoutes.route("/:_id").get(authMiddleware, (req, res, next) => {
     const _id = req.params._id;
     userSchema.findOne({ _id: _id }, function (err, user) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             delete user.password;
             return handleResponse(req, res, 200, user);
@@ -321,12 +321,12 @@ userRoutes.route("/delete/:_id").delete(authMiddleware, (req, res) => {
     });
 });
 
-userRoutes.route("/update/:_id").patch(authMiddleware, (req, res) => {
+userRoutes.route("/update/:_id").patch(authMiddleware, (req, res, next) => {
     const _id = req.params._id;
     const updateUser = req.body;
     userSchema.findOneAndUpdate({ _id: _id }, updateUser, function (err, user) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else if (user) {
             delete user.password;
             return handleResponse(req, res, 200, user);
@@ -341,27 +341,27 @@ const petSchema = require("./models/pet.model");
 const petRoutes = express.Router();
 app.use("/pets", petRoutes);
 
-petRoutes.route("/").get(function (req, res) {
+petRoutes.route("/").get(function (req, res, next) {
     petSchema.find(function (err, allPets) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             res.json(allPets);
         }
     });
 });
 
-petRoutes.route("/count").get(authMiddleware, function (req, res) {
+petRoutes.route("/count").get(authMiddleware, function (req, res, next) {
     petSchema.find().countDocuments(function (err, count) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             res.json(count);
         }
     });
 });
 
-petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
+petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res, next) {
     let pageId = req.params.pageId;
 
     petSchema.paginate(
@@ -375,7 +375,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
         },
         function (err, pets) {
             if (err) {
-                res.status(500).send({ get_error: err });
+                next(err);
             } else {
                 async function fetchRelatedData() {
                     const docs = pets.docs;
@@ -395,7 +395,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
                                 email: email,
                             });
                         } catch (error) {
-                            return res.status(500).send({ get_error: error });
+                            next(err);
                         }
 
                         try {
@@ -403,7 +403,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
                                 petMicrochip: microchip,
                             });
                         } catch (error) {
-                            return res.status(500).send({ get_error: error });
+                            next(err);
                         }
 
                         if (
@@ -442,11 +442,11 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res) {
     );
 });
 
-petRoutes.route("/:microchip").get(function (req, res) {
+petRoutes.route("/:microchip").get(function (req, res, next) {
     let microchip = req.params.microchip;
     petSchema.findOne({ microchip: microchip }, function (err, pet) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             if (!pet) {
                 res.status(404).send("Microchip is not registered yet.");
@@ -454,7 +454,7 @@ petRoutes.route("/:microchip").get(function (req, res) {
                 let email = pet.email;
                 ownerSchema.findOne({ email: email }, function (err, owner) {
                     if (err) {
-                        res.status(500).send({ get_error: err });
+                        next(err);
                     } else {
                         const response = { ...pet._doc, ...owner._doc };
                         delete response._id;
@@ -467,7 +467,7 @@ petRoutes.route("/:microchip").get(function (req, res) {
     });
 });
 
-petRoutes.route("/update").patch(function (req, res) {
+petRoutes.route("/update").patch(function (req, res, next) {
     let microchip = req.body.microchip;
 
     petSchema.findOneAndUpdate(
@@ -481,7 +481,7 @@ petRoutes.route("/update").patch(function (req, res) {
         },
         function (err, pet) {
             if (err) {
-                res.status(500).send({ get_error: err });
+                next(err);
             } else {
                 if (!pet) {
                     res.status(404).send("Pet is not registered");
@@ -541,7 +541,7 @@ petRoutes.route("/register").post(function (req, res, next) {
                     },
                     function (err, pet) {
                         if (err) {
-                            res.status(500).send({ get_error: err });
+                            next(err);
                         } else {
                             if (!pet) {
                                 newPet
@@ -573,27 +573,27 @@ const ownerSchema = require("./models/owner.model");
 const ownerRoutes = express.Router();
 app.use("/owners", ownerRoutes);
 
-ownerRoutes.route("/").get(function (req, res) {
+ownerRoutes.route("/").get(function (req, res, next) {
     ownerSchema.find(function (err, allOwners) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             res.json(allOwners);
         }
     });
 });
 
-ownerRoutes.route("/count").get(function (req, res) {
+ownerRoutes.route("/count").get(function (req, res, next) {
     ownerSchema.find().countDocuments(function (err, count) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             res.json(count);
         }
     });
 });
 
-ownerRoutes.route("/page/:pageId").get(function (req, res) {
+ownerRoutes.route("/page/:pageId").get(function (req, res, next) {
     let pageId = req.params.pageId;
 
     ownerSchema.paginate(
@@ -607,7 +607,7 @@ ownerRoutes.route("/page/:pageId").get(function (req, res) {
         },
         function (err, owners) {
             if (err) {
-                res.status(500).send({ get_error: err });
+                next(err);
             } else {
                 res.json(owners.docs);
             }
@@ -615,11 +615,11 @@ ownerRoutes.route("/page/:pageId").get(function (req, res) {
     );
 });
 
-ownerRoutes.route("/:_id").get(function (req, res) {
+ownerRoutes.route("/:_id").get(function (req, res, next) {
     let _id = req.params._id;
     ownerSchema.findOne({ _id: _id }, function (err, owner) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             if (!owner) {
                 res.status(404).send("Owner Not found");
@@ -630,7 +630,7 @@ ownerRoutes.route("/:_id").get(function (req, res) {
     });
 });
 
-ownerRoutes.route("/update/:_id").patch(function (req, res) {
+ownerRoutes.route("/update/:_id").patch(function (req, res, next) {
     let _id = req.params._id;
     ownerSchema.findOneAndUpdate(
         {
@@ -643,7 +643,7 @@ ownerRoutes.route("/update/:_id").patch(function (req, res) {
         },
         function (err, owner) {
             if (err) {
-                res.status(500).send({ get_error: err });
+                next(err);
             } else {
                 if (!owner) {
                     res.status(404).send("Owner Not Found");
@@ -671,7 +671,7 @@ ownerRoutes.route("/delete/:_id").delete(authMiddleware, (req, res) => {
     });
 });
 
-ownerRoutes.route("/register").post(function (req, res) {
+ownerRoutes.route("/register").post(function (req, res, next) {
     let email = req.body.email;
     const newOwner = new ownerSchema(req.body);
 
@@ -686,7 +686,7 @@ ownerRoutes.route("/register").post(function (req, res) {
         },
         function (err, owner) {
             if (err) {
-                res.status(500).send({ get_error: err });
+                next(err);
             } else {
                 if (!owner) {
                     newOwner
@@ -695,7 +695,7 @@ ownerRoutes.route("/register").post(function (req, res) {
                             res.json(owner);
                         })
                         .catch((err) => {
-                            res.status(500).send({ get_error: err });
+                            next(err);
                         });
                 } else {
                     res.status(403).send("Owner has already been registered");
@@ -712,22 +712,22 @@ const photoSchema = require("./models/photo.model");
 const photoRoutes = express.Router();
 app.use("/photos", photoRoutes);
 
-photoRoutes.route("/").get(function (req, res) {
+photoRoutes.route("/").get(function (req, res, next) {
     photoSchema.find(function (err, allPhotos) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             res.json(allPhotos);
         }
     });
 });
 
-photoRoutes.route("/:microchip").get(function (req, res) {
+photoRoutes.route("/:microchip").get(function (req, res, next) {
     let microchip = req.params.microchip;
 
     photoSchema.findOne({ petMicrochip: microchip }, function (err, photoData) {
         if (err) {
-            res.status(500).send({ get_error: err });
+            next(err);
         } else {
             if (photoData) {
                 res.set("Content-Type", "image/jpeg");
@@ -871,7 +871,7 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
                         email: email,
                     });
                 } catch (error) {
-                    return res.status(500).send({ get_error: error });
+                    next(err);
                 }
 
                 try {
@@ -879,7 +879,7 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
                         petMicrochip: microchip,
                     });
                 } catch (error) {
-                    return res.status(500).send({ get_error: error });
+                    next(err);
                 }
 
                 if (
