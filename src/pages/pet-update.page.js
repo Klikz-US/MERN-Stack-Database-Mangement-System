@@ -47,6 +47,7 @@ export default class RegisterPet extends Component {
         this.onClickSubmit = this.onClickSubmit.bind(this);
         this.onClickCancel = this.onClickCancel.bind(this);
         this.onPetPhotoUpdate = this.onPetPhotoUpdate.bind(this);
+        this.photoErrorHandle = this.photoErrorHandle.bind(this);
 
         this.state = {
             values: {
@@ -130,6 +131,11 @@ export default class RegisterPet extends Component {
                 console.log(err);
             });
     }
+
+    photoErrorHandle = (e) => {
+        e.preventDefault();
+        e.target.src = nophoto;
+    };
 
     onClickSubmit(values) {
         // Update Pet
@@ -614,6 +620,10 @@ export default class RegisterPet extends Component {
                                                             width="100%"
                                                             height="auto"
                                                             thumbnail
+                                                            onError={
+                                                                this
+                                                                    .photoErrorHandle
+                                                            }
                                                         />
                                                     </Col>
 

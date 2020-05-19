@@ -129,6 +129,11 @@ export default function PetList() {
         fetchData();
     };
 
+    const photoErrorHandle = (e) => {
+        e.preventDefault();
+        e.target.src = nophoto;
+    };
+
     const pagination = () => {
         async function handleNextPage(activePage) {
             setActivePage(activePage);
@@ -154,7 +159,8 @@ export default function PetList() {
                         src={pet.photoPath ? pet.photoPath : nophoto}
                         width="100%"
                         height="auto"
-                        alt="STL"
+                        alt={pet.microchip}
+                        onError={photoErrorHandle}
                     />
                 </Popover.Content>
             </Popover>
@@ -197,6 +203,7 @@ export default function PetList() {
                         width="73"
                         height="73"
                         alt={props.pet.microchip}
+                        onError={photoErrorHandle}
                     />
                 </OverlayTrigger>
             </td>

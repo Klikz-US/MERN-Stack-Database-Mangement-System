@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const http_port = process.env.HTTP_PORT;
 const https_port = process.env.HTTPS_PORT;
-const db_addr = process.env.DB_ADDR_ONLINE;
+const db_addr = process.env.DB_ADDR_LOCAL;
 const photo_path = process.env.PHOTO_PATH;
 const allowed_domains = ["https://portal.klikz.us", "http://localhost:3000"];
 
@@ -107,11 +107,7 @@ const upload = multer({
 /*
  * User
  */
-
-// middleware that checks if JWT token exists and verifies it if it does exist.
-// In all private routes, this helps to know if the request is authenticated or not.
 const authMiddleware = function (req, res, next) {
-    // check header or url parameters or post parameters for token
     var token = req.headers["authorization"];
     if (!token) return handleResponse(req, res, 401);
 
@@ -377,66 +373,7 @@ petRoutes.route("/page/:pageId").get(authMiddleware, function (req, res, next) {
             if (err) {
                 next(err);
             } else {
-                async function fetchRelatedData() {
-                    const docs = pets.docs;
-                    let new_docs = [];
-                    for (let index = 0; index < 20; index++) {
-                        const email = docs[index].email;
-                        const microchip = docs[index].microchip;
-
-                        let owner = {};
-                        let ownerId = "";
-                        let ownerName = "";
-                        let photo = {};
-                        let photoPath = "";
-
-                        try {
-                            owner = await ownerSchema.findOne({
-                                email: email,
-                            });
-                        } catch (error) {
-                            next(err);
-                        }
-
-                        try {
-                            photo = await photoSchema.findOne({
-                                petMicrochip: microchip,
-                            });
-                        } catch (error) {
-                            next(err);
-                        }
-
-                        if (
-                            owner &&
-                            owner.ownerName !== null &&
-                            owner.ownerName !== undefined
-                        ) {
-                            ownerId = owner._id;
-                            ownerName = owner.ownerName;
-                        }
-
-                        if (
-                            photo &&
-                            photo.petPhotoData !== null &&
-                            photo.petPhotoData !== undefined
-                        )
-                            photoPath = photo.petPhotoData;
-
-                        const new_doc = {
-                            ...docs[index]._doc,
-                            ...{
-                                ownerId: ownerId,
-                                ownerName: ownerName,
-                                photoPath: photoPath,
-                            },
-                        };
-
-                        new_docs.push(new_doc);
-                    }
-
-                    return res.json(new_docs);
-                }
-                fetchRelatedData();
+                return res.json(pets.docs);
             }
         }
     );
@@ -852,71 +789,7 @@ searchRoutes.route("/").post(authMiddleware, (req, res, next) => {
         if (pets.length === 0) {
             res.status(404).send("no result");
         } else {
-            let new_docs = [];
-            for (let index = 0; index < pets.length; index++) {
-                const email = pets[index].email;
-                const microchip = pets[index].microchip;
-
-                let owner = {};
-                let ownerId = "";
-                let ownerName = "";
-                let ownerPhone1 = "";
-                let ownerCity = "";
-                let ownerState = "";
-                let photo = {};
-                let photoPath = "";
-
-                try {
-                    owner = await ownerSchema.findOne({
-                        email: email,
-                    });
-                } catch (error) {
-                    next(err);
-                }
-
-                try {
-                    photo = await photoSchema.findOne({
-                        petMicrochip: microchip,
-                    });
-                } catch (error) {
-                    next(err);
-                }
-
-                if (
-                    owner &&
-                    owner.ownerName !== null &&
-                    owner.ownerName !== undefined
-                ) {
-                    ownerId = owner._id;
-                    ownerName = owner.ownerName;
-                    ownerPhone1 = owner.ownerPhone1;
-                    ownerState = owner.ownerState;
-                    ownerCity = owner.ownerCity;
-                }
-
-                if (
-                    photo &&
-                    photo.petPhotoData !== null &&
-                    photo.petPhotoData !== undefined
-                )
-                    photoPath = photo.petPhotoData;
-
-                const new_doc = {
-                    ...pets[index]._doc,
-                    ...{
-                        ownerId: ownerId,
-                        ownerName: ownerName,
-                        ownerPhone1: ownerPhone1,
-                        ownerState: ownerState,
-                        ownerCity: ownerCity,
-                        photoPath: photoPath,
-                    },
-                };
-
-                new_docs.push(new_doc);
-            }
-
-            return res.json(new_docs);
+            return res.json(pets);
         }
     }
     fetchRelatedData();
