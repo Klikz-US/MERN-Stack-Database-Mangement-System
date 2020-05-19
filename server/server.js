@@ -742,26 +742,27 @@ photoRoutes.route("/:microchip").get(function (req, res) {
 photoRoutes
     .route("/add")
     .post(upload.single("petPhotoData"), (req, res, next) => {
-        let petMicrochip = req.body.petMicrochip;
-        photoSchema.findOneAndDelete({ petMicrochip: petMicrochip }, function (
-            err,
-            photoData
-        ) {});
+        try {
+            let petMicrochip = req.body.petMicrochip;
+            photoSchema.findOneAndDelete({ petMicrochip: petMicrochip });
 
-        const newPetPhoto = new photoSchema({
-            petMicrochip: petMicrochip,
-            petPhotoName: req.body.petPhotoName,
-            petPhotoData: req.file.path,
-        });
+            const newPetPhoto = new photoSchema({
+                petMicrochip: petMicrochip,
+                petPhotoName: req.body.petPhotoName,
+                petPhotoData: req.file.path.split("..")[1],
+            });
 
-        newPetPhoto
-            .save()
-            .then((photo) => {
-                res.json({
-                    "uploaded-photo": photo,
-                });
-            })
-            .catch((err) => next(err));
+            newPetPhoto
+                .save()
+                .then((photo) => {
+                    res.json({
+                        "uploaded-photo": photo,
+                    });
+                })
+                .catch((err) => next(err));
+        } catch (error) {
+            next(error);
+        }
     });
 
 /*

@@ -24,3 +24,5 @@ yarn-error.log*
 
 # server credentials
 /uploads
+server.zip
+build.zip
