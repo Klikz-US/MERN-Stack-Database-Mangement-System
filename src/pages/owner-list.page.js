@@ -7,6 +7,7 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import { FcCancel } from "react-icons/fc";
 import { MdErrorOutline } from "react-icons/md";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import {
     ownerGetListService,
@@ -42,6 +43,7 @@ export default function OwnerList() {
     const [ownersDataBackup, setOwnersDataBackup] = useState(owners);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [pageLoading, setPageLoading] = useState(true);
 
     const searchCategory = useFormCheck("email");
     const searchValue = useFormInput("");
@@ -60,7 +62,9 @@ export default function OwnerList() {
             const ownerCount = await ownerGetCountService();
             if (!ownerCount.error)
                 setTotalPages(parseInt(ownerCount.data / 20));
+            setPageLoading(false);
         }
+        setPageLoading(true);
         fetchData();
     }, [dispatch, activePage]);
 
@@ -171,11 +175,33 @@ export default function OwnerList() {
     );
 
     const ownerList = (owners) => {
-        return owners.map(function (owner, index) {
-            const replace_obj = {};
+        if (pageLoading) {
+            return (
+                <tr>
+                    <td>
+                        <Container
+                            className="py-5 text-center"
+                            style={{ position: "absolute" }}
+                        >
+                            <ClipLoader
+                                css="margin: auto;"
+                                size={100}
+                                color={"#ff0000"}
+                                loading={pageLoading}
+                            />
+                        </Container>
+                    </td>
+                </tr>
+            );
+        } else {
+            return owners.map(function (owner, index) {
+                const replace_obj = {};
 
-            return <Owner owner={{ ...owner, ...replace_obj }} key={index} />;
-        });
+                return (
+                    <Owner owner={{ ...owner, ...replace_obj }} key={index} />
+                );
+            });
+        }
     };
 
     return (
@@ -237,7 +263,7 @@ export default function OwnerList() {
                 </Row>
 
                 <Row>
-                    <Table responsive striped>
+                    <Table responsive>
                         <thead className="bg-danger text-white">
                             <tr>
                                 <th style={{ width: "20%", maxWidth: "20%" }}>

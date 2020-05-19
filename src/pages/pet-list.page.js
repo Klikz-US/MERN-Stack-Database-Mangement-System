@@ -9,6 +9,7 @@ import Popover from "react-bootstrap/Popover";
 import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import { FcCancel } from "react-icons/fc";
 import { MdErrorOutline } from "react-icons/md";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import {
     petGetListService,
@@ -45,6 +46,7 @@ export default function PetList() {
     const [petsDataBackup, setPetsDataBackup] = useState(pets);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [pageLoading, setPageLoading] = useState(true);
 
     const searchCategory = useFormCheck("microchip");
     const searchValue = useFormInput("");
@@ -62,7 +64,9 @@ export default function PetList() {
 
             const petCount = await petGetCountService();
             if (!petCount.error) setTotalPages(parseInt(petCount.data / 20));
+            setPageLoading(false);
         }
+        setPageLoading(true);
         fetchData();
     }, [dispatch, activePage]);
 
@@ -209,11 +213,31 @@ export default function PetList() {
     );
 
     const petList = (pets) => {
-        return pets.map(function (pet, index) {
-            const replace_obj = {};
+        if (pageLoading) {
+            return (
+                <tr>
+                    <td>
+                        <Container
+                            className="py-5 text-center"
+                            style={{ position: "absolute" }}
+                        >
+                            <ClipLoader
+                                css="margin: auto;"
+                                size={100}
+                                color={"#ff0000"}
+                                loading={pageLoading}
+                            />
+                        </Container>
+                    </td>
+                </tr>
+            );
+        } else {
+            return pets.map(function (pet, index) {
+                const replace_obj = {};
 
-            return <Pet pet={{ ...pet, ...replace_obj }} key={index} />;
-        });
+                return <Pet pet={{ ...pet, ...replace_obj }} key={index} />;
+            });
+        }
     };
 
     return (
@@ -286,7 +310,7 @@ export default function PetList() {
                 </Row>
 
                 <Row>
-                    <Table responsive striped>
+                    <Table responsive>
                         <thead className="bg-danger text-white">
                             <tr>
                                 <th style={{ width: "14%", maxWidth: "14%" }}>

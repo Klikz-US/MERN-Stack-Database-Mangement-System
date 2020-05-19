@@ -27,95 +27,96 @@ export default function STLRouter() {
 
     return (
         <Router>
-            {isAuthenticated && <Header />}
+            <div>
+                {isAuthenticated && <Header />}
 
-            <main className="mb-5">
-                <Switch>
-                    <PrivateRoute
-                        path="/"
-                        exact
-                        component={Dashboard}
-                        isAuthenticated={isAuthenticated}
-                    />
+                <main>
+                    <Switch>
+                        <PrivateRoute
+                            path="/"
+                            exact
+                            component={Dashboard}
+                            isAuthenticated={isAuthenticated}
+                        />
 
-                    <PrivateRoute
-                        path="/pets"
-                        exact
-                        component={PetList}
-                        isAuthenticated={isAuthenticated}
-                    />
-                    <PrivateRoute
-                        path="/pets/edit/:id"
-                        exact
-                        component={PetEdit}
-                        isAuthenticated={isAuthenticated}
-                    />
-                    <PrivateRoute
-                        path="/pets/register"
-                        exact
-                        component={PetRegister}
-                        isAuthenticated={isAuthenticated}
-                    />
+                        <PrivateRoute
+                            path="/pets"
+                            exact
+                            component={PetList}
+                            isAuthenticated={isAuthenticated}
+                        />
+                        <PrivateRoute
+                            path="/pets/edit/:id"
+                            exact
+                            component={PetEdit}
+                            isAuthenticated={isAuthenticated}
+                        />
+                        <PrivateRoute
+                            path="/pets/register"
+                            exact
+                            component={PetRegister}
+                            isAuthenticated={isAuthenticated}
+                        />
 
-                    <PrivateRoute
-                        path="/owners"
-                        exact
-                        component={OwnerList}
-                        isAuthenticated={isAuthenticated}
-                    />
-                    <PrivateRoute
-                        path="/owners/edit/:id"
-                        exact
-                        component={OwnerEdit}
-                        isAuthenticated={isAuthenticated}
-                    />
-                    <PrivateRoute
-                        path="/owners/register"
-                        exact
-                        component={OwnerRegister}
-                        isAuthenticated={isAuthenticated}
-                    />
+                        <PrivateRoute
+                            path="/owners"
+                            exact
+                            component={OwnerList}
+                            isAuthenticated={isAuthenticated}
+                        />
+                        <PrivateRoute
+                            path="/owners/edit/:id"
+                            exact
+                            component={OwnerEdit}
+                            isAuthenticated={isAuthenticated}
+                        />
+                        <PrivateRoute
+                            path="/owners/register"
+                            exact
+                            component={OwnerRegister}
+                            isAuthenticated={isAuthenticated}
+                        />
 
-                    <PrivateRoute
-                        path="/users"
-                        exact
-                        component={UserList}
-                        isAuthenticated={isAuthenticated}
-                        isAdmin={isAdmin}
-                    />
-                    <PrivateRoute
-                        path="/users/add"
-                        exact
-                        component={UserRegister}
-                        isAuthenticated={isAuthenticated}
-                        isAdmin={isAdmin}
-                    />
-                    <PrivateRoute
-                        path="/users/edit/:id"
-                        exact
-                        component={UserEdit}
-                        isAuthenticated={isAuthenticated}
-                        isAdmin={isAdmin}
-                    />
+                        <PrivateRoute
+                            path="/users"
+                            exact
+                            component={UserList}
+                            isAuthenticated={isAuthenticated}
+                            isAdmin={isAdmin}
+                        />
+                        <PrivateRoute
+                            path="/users/add"
+                            exact
+                            component={UserRegister}
+                            isAuthenticated={isAuthenticated}
+                            isAdmin={isAdmin}
+                        />
+                        <PrivateRoute
+                            path="/users/edit/:id"
+                            exact
+                            component={UserEdit}
+                            isAuthenticated={isAuthenticated}
+                            isAdmin={isAdmin}
+                        />
 
-                    <PrivateRoute
-                        path="/report"
-                        exact
-                        component={Report}
-                        isAuthenticated={isAuthenticated}
-                        isAdmin={isAdmin}
-                    />
+                        <PrivateRoute
+                            path="/report"
+                            exact
+                            component={Report}
+                            isAuthenticated={isAuthenticated}
+                            isAdmin={isAdmin}
+                        />
 
-                    <PublicRoute
-                        path="/login"
-                        component={AccountLogin}
-                        isAuthenticated={isAuthenticated}
-                    />
+                        <PublicRoute
+                            path="/login"
+                            component={AccountLogin}
+                            isAuthenticated={isAuthenticated}
+                        />
 
-                    <Redirect to={isAuthenticated ? "/" : "/login"} />
-                </Switch>
-            </main>
-
+                        <Redirect to={isAuthenticated ? "/" : "/login"} />
+                    </Switch>
+                </main>
+            </div>
             {isAuthenticated && <Footer />}
         </Router>
     );

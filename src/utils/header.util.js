@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import Navbar from "react-bootstrap/Navbar";
@@ -32,14 +31,14 @@ export default function Navigation() {
             >
                 <Container>
                     <Navbar.Brand>
-                        <Link to="/">
+                        <Nav.Link href="/">
                             <img
                                 src={logo}
                                 width="auto"
                                 height="80"
                                 alt="STL Portal"
                             />
-                        </Link>
+                        </Nav.Link>
                     </Navbar.Brand>
 
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -51,18 +50,18 @@ export default function Navigation() {
                                     title="Administration "
                                     className="mr-4"
                                 >
-                                    <Link
-                                        to="/users"
+                                    <Nav.Link
+                                        href="/users"
                                         className="d-block px-3 py-2 text-dark"
                                     >
                                         Rep Accounts
-                                    </Link>
-                                    <Link
-                                        to="/users/add"
+                                    </Nav.Link>
+                                    <Nav.Link
+                                        href="/users/add"
                                         className="d-block px-3 py-2 text-dark"
                                     >
                                         Add New Rep
-                                    </Link>
+                                    </Nav.Link>
                                 </DropdownButton>
                             )}
 
@@ -71,18 +70,18 @@ export default function Navigation() {
                                 title="Manage Pets "
                                 className="mr-4"
                             >
-                                <Link
-                                    to="/pets"
+                                <Nav.Link
+                                    href="/pets"
                                     className="d-block px-3 py-2 text-dark"
                                 >
                                     All Pets
-                                </Link>
-                                <Link
-                                    to="/pets/register"
+                                </Nav.Link>
+                                <Nav.Link
+                                    href="/pets/register"
                                     className="d-block px-3 py-2 text-dark"
                                 >
                                     Add New Pet
-                                </Link>
+                                </Nav.Link>
                             </DropdownButton>
 
                             <DropdownButton
@@ -90,30 +89,33 @@ export default function Navigation() {
                                 title="Manage Owners "
                                 className="mr-4"
                             >
-                                <Link
-                                    to="/owners"
+                                <Nav.Link
+                                    href="/owners"
                                     className="d-block px-3 py-2 text-dark"
                                 >
                                     All Owners
-                                </Link>
-                                <Link
-                                    to="/owners/register"
+                                </Nav.Link>
+                                <Nav.Link
+                                    href="/owners/register"
                                     className="d-block px-3 py-2 text-dark"
                                 >
                                     Add New Owner
-                                </Link>
+                                </Nav.Link>
                             </DropdownButton>
                         </Nav>
 
                         <Nav className="ml-auto">
-                            <Link to="/account/logout" className="d-block px-2">
+                            <Nav.Link
+                                href="/account/logout"
+                                className="d-block px-2"
+                            >
                                 <Button
                                     variant="warning"
                                     onClick={handleLogout}
                                 >
                                     Logout
                                 </Button>
-                            </Link>
+                            </Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

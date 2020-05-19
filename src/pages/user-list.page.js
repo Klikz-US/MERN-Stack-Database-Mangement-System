@@ -4,6 +4,7 @@ import moment from "moment";
 import { Container, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import { userGetListService } from "./../services/user.service";
 import {
@@ -34,9 +35,11 @@ export default function UserList() {
         };
     }, [expiredAt, token, dispatch]);
     /* ----------------------- */
+
     const { username } = auth_obj.user;
     const [users, setUsers] = useState([]);
     const [deleteError, setDeleteError] = useState("");
+    const [pageLoading, setPageLoading] = useState(true);
 
     useEffect(() => {
         async function fetchData() {
@@ -46,7 +49,9 @@ export default function UserList() {
             } else {
                 setUsers(result.data.userList);
             }
+            setPageLoading(false);
         }
+        setPageLoading(true);
         fetchData();
     }, [dispatch]);
 
@@ -99,23 +104,43 @@ export default function UserList() {
     );
 
     const userList = (users) => {
-        return users.map(function (user, index) {
-            const replace_obj = {};
+        if (pageLoading) {
+            return (
+                <tr>
+                    <td>
+                        <Container
+                            className="py-5 text-center"
+                            style={{ position: "absolute" }}
+                        >
+                            <ClipLoader
+                                css="margin: auto;"
+                                size={100}
+                                color={"#ff0000"}
+                                loading={pageLoading}
+                            />
+                        </Container>
+                    </td>
+                </tr>
+            );
+        } else {
+            return users.map(function (user, index) {
+                const replace_obj = {};
 
-            switch (user.role) {
-                case "admin":
-                    replace_obj.role = "STL Admin";
-                    break;
-                case "rep":
-                    replace_obj.role = "STL Rep";
-                    break;
-                default:
-                    replace_obj.role = "Vet Practice";
-                    break;
-            }
+                switch (user.role) {
+                    case "admin":
+                        replace_obj.role = "STL Admin";
+                        break;
+                    case "rep":
+                        replace_obj.role = "STL Rep";
+                        break;
+                    default:
+                        replace_obj.role = "Vet Practice";
+                        break;
+                }
 
-            return <User user={{ ...user, ...replace_obj }} key={index} />;
-        });
+                return <User user={{ ...user, ...replace_obj }} key={index} />;
+            });
+        }
     };
 
     return (
@@ -124,7 +149,7 @@ export default function UserList() {
                 <h1 className="m-5 text-center">All Portal Users</h1>
 
                 <Row>
-                    <Table responsive striped>
+                    <Table responsive>
                         <thead className="bg-success text-white">
                             <tr>
                                 <th>Name</th>
