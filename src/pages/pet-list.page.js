@@ -154,7 +154,7 @@ export default function PetList() {
                         src={pet.photoPath ? pet.photoPath : nophoto}
                         width="100%"
                         height="auto"
-                        alt={pet.membership}
+                        alt="STL"
                     />
                 </Popover.Content>
             </Popover>

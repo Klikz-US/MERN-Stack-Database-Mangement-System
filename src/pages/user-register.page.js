@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import Image from 'react-bootstrap/Image'
+import Image from "react-bootstrap/Image";
 
-import { verifyTokenAsync } from '../actions/auth-async.action';
-import { setAuthToken } from '../services/auth.service';
-import { useFormInput } from '../utils/form-input.util';
-import { useFormCheck } from '../utils/form-check.util';
-import { userRegisterService } from '../services/user.service';
+import { verifyTokenAsync } from "../actions/auth-async.action";
+import { setAuthToken } from "../services/auth.service";
+import { useFormInput } from "../utils/form-input.util";
+import { useFormCheck } from "../utils/form-check.util";
+import { userRegisterService } from "../services/user.service";
 
-import img from '../assets/images/user-register.jpg';
+import img from "../assets/images/user-register.jpg";
 
 export default function UserRegister() {
     /*
      * Private Page Token Verification Module.
      */
-    const auth_obj = useSelector(state => state.auth);
+    const auth_obj = useSelector((state) => state.auth);
     const { token, expiredAt } = auth_obj;
     const dispatch = useDispatch();
     useEffect(() => {
@@ -28,19 +28,19 @@ export default function UserRegister() {
         }, moment(expiredAt).diff() - 10 * 1000);
         return () => {
             clearTimeout(verifyTokenTimer);
-        }
+        };
     }, [expiredAt, token, dispatch]);
     /* ----------------------- */
 
-    const role = useFormCheck('vet');
-    const name = useFormInput('');
-    const email = useFormInput('');
-    const phone = useFormInput('');
-    const password = useFormInput('');
-    const password_confirm = useFormInput('');
+    const role = useFormCheck("vet");
+    const name = useFormInput("");
+    const email = useFormInput("");
+    const phone = useFormInput("");
+    const password = useFormInput("");
+    const password_confirm = useFormInput("");
 
     const history = useHistory();
-    const [formError, setFormError] = useState('');
+    const [formError, setFormError] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -52,32 +52,33 @@ export default function UserRegister() {
                     email: email.value,
                     phone: phone.value,
                     name: name.value,
-                    password: password.value
+                    password: password.value,
                 };
-                newUser.isAdmin = newUser.role === 'admin' ? true : false;
+                newUser.isAdmin = newUser.role === "admin" ? true : false;
                 const result = await userRegisterService(newUser);
                 if (result.error) {
                     setFormError(result.errMsg);
                 } else {
-                    history.push('/users');
+                    history.push("/users");
                 }
-            } fetchData();
+            }
+            fetchData();
         } else {
-            setFormError('Password do not match');
+            setFormError("Password do not match");
         }
-    }
+    };
 
     const handleCancel = (e) => {
         e.preventDefault();
-        history.push('/users');
-    }
+        history.push("/users");
+    };
 
     return (
         <>
             <Container>
                 <h1 className="m-5 text-center">Add A New Portal User</h1>
 
-                <Form>
+                <Form autoComplete="off">
                     <Row>
                         <Col className="align-self-center">
                             <Image src={img} roundedCircle width="90%" />
@@ -99,7 +100,9 @@ export default function UserRegister() {
                                                 name="role"
                                                 value="admin"
                                                 label="STL Admin"
-                                                checked={role.selected === "admin"}
+                                                checked={
+                                                    role.selected === "admin"
+                                                }
                                                 {...role}
                                             />
                                             <Form.Check
@@ -108,7 +111,9 @@ export default function UserRegister() {
                                                 type="radio"
                                                 name="role"
                                                 value="rep"
-                                                checked={role.selected === "rep"}
+                                                checked={
+                                                    role.selected === "rep"
+                                                }
                                                 label="STL Representation"
                                                 {...role}
                                             />
@@ -119,7 +124,9 @@ export default function UserRegister() {
                                                 name="role"
                                                 value="vet"
                                                 label="Vet Practice"
-                                                checked={role.selected === "vet"}
+                                                checked={
+                                                    role.selected === "vet"
+                                                }
                                                 {...role}
                                             />
                                         </Col>
@@ -162,7 +169,9 @@ export default function UserRegister() {
                                     </Form.Group>
 
                                     <Form.Group>
-                                        <Form.Label>Confirm Password</Form.Label>
+                                        <Form.Label>
+                                            Confirm Password
+                                        </Form.Label>
                                         <Form.Control
                                             type="password"
                                             {...password_confirm}
@@ -192,11 +201,11 @@ export default function UserRegister() {
                                 Add User
                             </Button>
 
-                            {formError &&
+                            {formError && (
                                 <Form.Text className="text-danger float-right mr-4">
                                     {formError}
                                 </Form.Text>
-                            }
+                            )}
                         </Col>
                     </Row>
                 </Form>

@@ -231,7 +231,11 @@ export default class RegisterPet extends Component {
                         errors,
                         isSubmitting,
                     }) => (
-                        <Form noValidate onSubmit={handleSubmit}>
+                        <Form
+                            noValidate
+                            onSubmit={handleSubmit}
+                            autoComplete="off"
+                        >
                             <Container>
                                 <Row>
                                     <Col>

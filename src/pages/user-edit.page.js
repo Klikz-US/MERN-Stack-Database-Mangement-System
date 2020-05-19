@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import Image from 'react-bootstrap/Image'
+import Image from "react-bootstrap/Image";
 
-import { verifyTokenAsync, userLogoutAsync } from '../actions/auth-async.action';
-import { setAuthToken } from '../services/auth.service';
-import { useFormInput } from '../utils/form-input.util';
-import { useFormCheck } from '../utils/form-check.util';
-import { userGetService, userUpdateService } from '../services/user.service';
+import {
+    verifyTokenAsync,
+    userLogoutAsync,
+} from "../actions/auth-async.action";
+import { setAuthToken } from "../services/auth.service";
+import { useFormInput } from "../utils/form-input.util";
+import { useFormCheck } from "../utils/form-check.util";
+import { userGetService, userUpdateService } from "../services/user.service";
 
-import img from '../assets/images/user-register.jpg';
+import img from "../assets/images/user-register.jpg";
 
 export default function UserEdit() {
     /*
      * Private Page Token Verification Module.
      */
-    const auth_obj = useSelector(state => state.auth);
+    const auth_obj = useSelector((state) => state.auth);
     const { token, expiredAt } = auth_obj;
     const dispatch = useDispatch();
     useEffect(() => {
@@ -28,18 +31,18 @@ export default function UserEdit() {
         }, moment(expiredAt).diff() - 10 * 1000);
         return () => {
             clearTimeout(verifyTokenTimer);
-        }
+        };
     }, [expiredAt, token, dispatch]);
     /* ----------------------- */
 
     const { id } = useParams();
     const history = useHistory();
-    const [formError, setFormError] = useState('');
+    const [formError, setFormError] = useState("");
     const [user, setUser] = useState({
-        role: '',
-        name: '',
-        email: '',
-        phone: '',
+        role: "",
+        name: "",
+        email: "",
+        phone: "",
     });
 
     const role = useFormCheck(user.role);
@@ -55,7 +58,8 @@ export default function UserEdit() {
             } else {
                 setUser(result.data);
             }
-        } getData();
+        }
+        getData();
     }, [dispatch, id, setUser]);
 
     const handleSubmit = (e) => {
@@ -68,27 +72,28 @@ export default function UserEdit() {
                 phone: phone.value,
                 name: name.value,
             };
-            updateUser.isAdmin = updateUser.role === 'admin' ? true : false;
+            updateUser.isAdmin = updateUser.role === "admin" ? true : false;
             const result = await userUpdateService(id, updateUser);
             if (result.error) {
                 setFormError(result.errMsg);
             } else {
-                history.push('/users');
+                history.push("/users");
             }
-        } fetchData();
-    }
+        }
+        fetchData();
+    };
 
     const handleCancel = (e) => {
         e.preventDefault();
-        history.push('/users');
-    }
+        history.push("/users");
+    };
 
     return (
         <>
             <Container>
                 <h1 className="m-5 text-center">Edit User</h1>
 
-                <Form>
+                <Form autoComplete="off">
                     <Row>
                         <Col className="align-self-center">
                             <Image src={img} roundedCircle width="90%" />
@@ -110,7 +115,9 @@ export default function UserEdit() {
                                                 name="role"
                                                 value="admin"
                                                 label="STL Admin"
-                                                checked={role.selected === "admin"}
+                                                checked={
+                                                    role.selected === "admin"
+                                                }
                                                 {...role}
                                             />
                                             <Form.Check
@@ -119,7 +126,9 @@ export default function UserEdit() {
                                                 type="radio"
                                                 name="role"
                                                 value="rep"
-                                                checked={role.selected === "rep"}
+                                                checked={
+                                                    role.selected === "rep"
+                                                }
                                                 label="STL Representation"
                                                 {...role}
                                             />
@@ -130,7 +139,9 @@ export default function UserEdit() {
                                                 name="role"
                                                 value="vet"
                                                 label="Vet Practice"
-                                                checked={role.selected === "vet"}
+                                                checked={
+                                                    role.selected === "vet"
+                                                }
                                                 {...role}
                                             />
                                         </Col>
@@ -185,11 +196,11 @@ export default function UserEdit() {
                                 Add User
                             </Button>
 
-                            {formError &&
+                            {formError && (
                                 <Form.Text className="text-danger float-right mr-4">
                                     {formError}
                                 </Form.Text>
-                            }
+                            )}
                         </Col>
                     </Row>
                 </Form>
