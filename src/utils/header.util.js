@@ -6,6 +6,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import { Container, Button } from "react-bootstrap";
+import { FiLogOut, FiSettings } from "react-icons/fi";
 
 import { userLogoutAsync } from "../actions/auth-async.action";
 
@@ -16,6 +17,8 @@ export default function Navigation() {
     const dispatch = useDispatch();
 
     const { isAdmin } = auth_obj.user;
+
+    const { userId } = auth_obj.user;
 
     const handleLogout = () => {
         dispatch(userLogoutAsync());
@@ -106,14 +109,25 @@ export default function Navigation() {
                         </Nav>
 
                         <Nav className="ml-auto">
-                            <Link to="/logout" className="d-block px-2">
-                                <Button
-                                    variant="warning"
-                                    onClick={handleLogout}
-                                >
-                                    Logout
+                            <Link
+                                to={`/users/edit/${userId}`}
+                                className="d-block"
+                            >
+                                <Button className="px-2" variant="info">
+                                    <FiSettings
+                                        size={24}
+                                        className="text-white"
+                                    />
                                 </Button>
                             </Link>
+
+                            <Button
+                                className="px-2"
+                                variant="info"
+                                onClick={handleLogout}
+                            >
+                                <FiLogOut size={24} className="text-white" />
+                            </Button>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

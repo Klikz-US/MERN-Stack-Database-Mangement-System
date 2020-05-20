@@ -36,6 +36,7 @@ export default function UserEdit() {
     /* ----------------------- */
 
     const { id } = useParams();
+    const { userId } = auth_obj.user;
     const history = useHistory();
     const [formError, setFormError] = useState("");
     const [user, setUser] = useState({
@@ -91,7 +92,12 @@ export default function UserEdit() {
     return (
         <>
             <Container>
-                <h1 className="m-5 text-center">Edit User</h1>
+                {userId === id && (
+                    <h1 className="m-5 text-center">My Profile</h1>
+                )}
+                {userId !== id && (
+                    <h1 className="m-5 text-center">Edit User</h1>
+                )}
 
                 <Form autoComplete="off">
                     <Row>
@@ -119,6 +125,7 @@ export default function UserEdit() {
                                                     role.selected === "admin"
                                                 }
                                                 {...role}
+                                                disabled={userId === id}
                                             />
                                             <Form.Check
                                                 inline
@@ -131,6 +138,7 @@ export default function UserEdit() {
                                                 }
                                                 label="STL Representation"
                                                 {...role}
+                                                disabled={userId === id}
                                             />
                                             <Form.Check
                                                 inline
@@ -143,6 +151,7 @@ export default function UserEdit() {
                                                     role.selected === "vet"
                                                 }
                                                 {...role}
+                                                disabled={userId === id}
                                             />
                                         </Col>
                                     </Form.Group>

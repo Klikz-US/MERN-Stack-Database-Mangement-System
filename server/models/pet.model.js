@@ -7,66 +7,71 @@ let petSchema = new Schema(
     {
         microchip: {
             type: String,
-            required: true,
             index: true,
         },
         petName: {
             type: String,
-            required: true,
+            default: "",
         },
         petSpecies: {
             type: String,
-            required: true,
+            default: "dog",
         },
         petBreed: {
             type: String,
-            required: true,
+            default: "",
         },
         petColor: {
             type: String,
-            required: true,
+            default: "",
         },
         petGender: {
             type: String,
-            required: true,
+            default: "Male",
         },
         petBirth: {
-            type: Date,
-            required: true,
+            type: String,
+            default: "01/01/2001",
         },
         specialNeeds: {
             type: String,
+            default: "",
         },
         vetInfo: {
             type: String,
+            default: "",
         },
         dateRV: {
-            type: Date,
+            type: String,
+            default: "",
         },
         implantedCompany: {
             type: String,
+            default: "",
         },
         email: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerId: {
             type: String,
+            default: "",
         },
         photoPath: {
             type: String,
+            default: "",
         },
         ownerName: {
             type: String,
+            default: "",
         },
         membership: {
             type: String,
             default: "platinum",
-            required: true,
         },
         registered_at: {
             type: String,
-            default: new Date(),
+            default: "01/01/2001",
         },
     },
     {

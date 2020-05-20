@@ -12,62 +12,71 @@ let ownerSchema = new Schema(
         },
         ownerName: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerPhone1: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerPhone2: {
             type: String,
+            default: "",
         },
         ownerPhone3: {
             type: String,
+            default: "",
         },
         ownerPhone4: {
             type: String,
+            default: "",
         },
         ownerPhone5: {
             type: String,
+            default: "",
         },
         ownerPhone6: {
             type: String,
+            default: "",
         },
         ownerPhone7: {
             type: String,
+            default: "",
         },
         ownerAddress1: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerAddress2: {
             type: String,
+            default: "",
         },
         ownerCity: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerState: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerZip: {
             type: String,
-            required: true,
+            default: "",
         },
         ownerCountry: {
             type: String,
-            required: true,
+            default: "US",
         },
         ownerSecContact: {
             type: String,
+            default: "",
         },
         ownerNote: {
             type: String,
+            default: "",
         },
         registered_at: {
             type: String,
-            default: new Date(),
+            default: "01/01/2001",
         },
     },
     {

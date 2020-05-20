@@ -10,11 +10,11 @@ let photoSchema = new Schema(
         },
         petPhotoName: {
             type: String,
-            required: true,
+            default: "",
         },
         petPhotoData: {
             type: String,
-            required: true,
+            default: "",
         },
     },
     {

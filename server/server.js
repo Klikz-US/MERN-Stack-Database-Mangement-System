@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const http_port = process.env.HTTP_PORT;
 const https_port = process.env.HTTPS_PORT;
-const db_addr = process.env.DB_ADDR_LOCAL;
+const db_addr = process.env.DB_ADDR_ONLINE;
 const photo_path = process.env.PHOTO_PATH;
 const allowed_domains = ["https://portal.klikz.us", "http://localhost:3000"];
 

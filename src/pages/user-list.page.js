@@ -36,6 +36,7 @@ export default function UserList() {
     }, [expiredAt, token, dispatch]);
     /* ----------------------- */
 
+    const { userId } = auth_obj.user;
     const { username } = auth_obj.user;
     const [users, setUsers] = useState([]);
     const [deleteError, setDeleteError] = useState("");
@@ -124,6 +125,7 @@ export default function UserList() {
             );
         } else {
             return users.map(function (user, index) {
+                if (user._id === userId) return;
                 const replace_obj = {};
 
                 switch (user.role) {
