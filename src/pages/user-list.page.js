@@ -125,7 +125,7 @@ export default function UserList() {
             );
         } else {
             return users.map(function (user, index) {
-                if (user._id === userId) return;
+                if (user._id === userId) return null;
                 const replace_obj = {};
 
                 switch (user.role) {

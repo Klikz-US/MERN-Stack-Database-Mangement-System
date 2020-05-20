@@ -135,6 +135,7 @@ export default function UserRegister() {
                                     <Form.Group>
                                         <Form.Label>Name</Form.Label>
                                         <Form.Control
+                                            id="userName"
                                             type="text"
                                             {...name}
                                             placeholder="Enter Full Name"
@@ -144,6 +145,7 @@ export default function UserRegister() {
                                     <Form.Group>
                                         <Form.Label>Email</Form.Label>
                                         <Form.Control
+                                            id="userEmail"
                                             type="email"
                                             {...email}
                                             placeholder="Enter Email Address"
@@ -153,6 +155,7 @@ export default function UserRegister() {
                                     <Form.Group>
                                         <Form.Label>Phone</Form.Label>
                                         <Form.Control
+                                            id="userPhone"
                                             type="text"
                                             {...phone}
                                             placeholder="Enter Phone Number"
@@ -162,6 +165,7 @@ export default function UserRegister() {
                                     <Form.Group>
                                         <Form.Label>Password</Form.Label>
                                         <Form.Control
+                                            id="userPass"
                                             type="password"
                                             {...password}
                                             placeholder="Enter Password"
@@ -173,6 +177,7 @@ export default function UserRegister() {
                                             Confirm Password
                                         </Form.Label>
                                         <Form.Control
+                                            id="userPassConfirm"
                                             type="password"
                                             {...password_confirm}
                                             placeholder="Enter Password Again"

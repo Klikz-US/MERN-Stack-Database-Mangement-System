@@ -50,6 +50,8 @@ export default function UserEdit() {
     const name = useFormInput(user.name);
     const email = useFormInput(user.email);
     const phone = useFormInput(user.phone);
+    const pass = useFormInput("");
+    const pass_confirm = useFormInput("");
 
     useEffect(() => {
         async function getData() {
@@ -57,6 +59,7 @@ export default function UserEdit() {
             if (result.error) {
                 dispatch(userLogoutAsync());
             } else {
+                console.log(result.data);
                 setUser(result.data);
             }
         }
@@ -67,12 +70,29 @@ export default function UserEdit() {
         e.preventDefault();
 
         async function fetchData() {
-            const updateUser = {
-                role: role.selected,
-                email: email.value,
-                phone: phone.value,
-                name: name.value,
-            };
+            let updateUser = {};
+            if (pass.value !== pass_confirm.value) {
+                setFormError("Re-enter the passwords!");
+            } else {
+                if (id === userId) {
+                    updateUser = {
+                        role: user.role,
+                        email: email.value,
+                        phone: phone.value,
+                        name: name.value,
+                        password: pass.value,
+                    };
+                } else {
+                    updateUser = {
+                        role: role.selected,
+                        email: email.value,
+                        phone: phone.value,
+                        name: name.value,
+                        password: pass.value,
+                    };
+                }
+            }
+
             updateUser.isAdmin = updateUser.role === "admin" ? true : false;
             const result = await userUpdateService(id, updateUser);
             if (result.error) {
@@ -182,6 +202,32 @@ export default function UserEdit() {
                                             placeholder="Enter Phone Number"
                                         />
                                     </Form.Group>
+
+                                    {id === userId && (
+                                        <>
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Password
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="password"
+                                                    {...pass}
+                                                    placeholder="Enter Password"
+                                                />
+                                            </Form.Group>
+
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Confirm Password
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="password"
+                                                    {...pass_confirm}
+                                                    placeholder="Enter Password Again"
+                                                />
+                                            </Form.Group>
+                                        </>
+                                    )}
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -202,7 +248,7 @@ export default function UserEdit() {
                                 variant="primary"
                                 onClick={handleSubmit}
                             >
-                                Add User
+                                Update
                             </Button>
 
                             {formError && (
