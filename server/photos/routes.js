@@ -1,4 +1,5 @@
 const Controller = require("./controller");
+const Authentication = require("../services/auth");
 
 require("dotenv").config();
 const photo_path = process.env.PHOTO_PATH;
@@ -34,6 +35,13 @@ const upload = multer({
 });
 
 exports.routesConfig = function (app) {
-    app.get("/photos/:microchip", [Controller.getByMicrochip]);
-    app.post("/photos/add", [upload.single("petPhotoData"), Controller.add]);
+    app.get("/photos/:microchip", [
+        Authentication.authMiddleware,
+        Controller.getByMicrochip,
+    ]);
+    app.post("/photos/add", [
+        Authentication.authMiddleware,
+        upload.single("petPhotoData"),
+        Controller.add,
+    ]);
 };
