@@ -84,7 +84,7 @@ export default class UpdateOwner extends Component {
         // Update Owner
         axios
             .patch(
-                window.$server_url + "/owners/update/" + this.state.values._id,
+                window.$server_url + "/owners/edit/" + this.state.values._id,
                 values
             )
             .then((res) => {
@@ -97,7 +97,7 @@ export default class UpdateOwner extends Component {
 
     onClickCancel(e) {
         e.preventDefault();
-        this.props.history.push("/owners");
+        this.props.history.goBack();
     }
 
     listAllCountryOptions() {

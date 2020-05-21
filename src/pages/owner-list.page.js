@@ -16,7 +16,7 @@ import {
 } from "./../services/owner.service";
 import { verifyTokenAsync } from "../actions/auth-async.action";
 import { setAuthToken } from "../services/auth.service";
-import { searchService } from "../services/search.service";
+import { ownerSearchService } from "../services/search.service";
 import { useFormInput } from "../utils/form-input.util";
 import { useFormCheck } from "../utils/form-check.util";
 import Pagination from "../utils/pagination.util";
@@ -40,7 +40,6 @@ export default function OwnerList() {
     /* ----------------------- */
 
     const [owners, setOwners] = useState([]);
-    const [ownersDataBackup, setOwnersDataBackup] = useState(owners);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageLoading, setPageLoading] = useState(true);
@@ -55,7 +54,6 @@ export default function OwnerList() {
         async function fetchData() {
             const ownerList = await ownerGetListService(activePage);
             if (!ownerList.error) {
-                setOwnersDataBackup(ownerList.data);
                 setOwners(ownerList.data);
             }
 
@@ -64,23 +62,25 @@ export default function OwnerList() {
                 setTotalPages(parseInt(ownerCount.data / 20));
             setPageLoading(false);
         }
-        setPageLoading(true);
-        fetchData();
-    }, [dispatch, activePage]);
+        if (!hasResult) {
+            setPageLoading(true);
+            fetchData();
+        }
+    }, [dispatch, activePage, hasResult]);
 
     const handleSearch = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
 
-        if (searchValue.value !== "") {
+        if (searchValue.value.trim() !== "") {
             async function fetchData() {
                 setIsSearching(true);
 
                 const searchReq = {
                     field: searchCategory.selected,
-                    value: searchValue.value,
+                    value: searchValue.value.trim(),
                 };
 
-                const searchResult = await searchService(searchReq);
+                const searchResult = await ownerSearchService(searchReq);
                 if (searchResult.error) {
                     setHasSearchError(true);
                     setHasResult(false);
@@ -100,7 +100,6 @@ export default function OwnerList() {
         e.preventDefault();
 
         setHasSearchError(false);
-        setOwners(ownersDataBackup);
         setHasResult(false);
     };
 
@@ -110,20 +109,25 @@ export default function OwnerList() {
             if (result.error) {
                 console.log(result.errMsg);
             } else {
-                async function fetchData() {
+                async function fetchOwnerData() {
                     const ownerList = await ownerGetListService(activePage);
                     if (!ownerList.error) {
-                        setOwnersDataBackup(ownerList.data);
-                        setOwners(ownerList.data);
+                        if (hasResult) {
+                            handleSearch();
+                        } else {
+                            setOwners(ownerList.data);
+                        }
                     }
 
                     const ownerCount = await ownerGetCountService();
                     if (!ownerCount.error)
                         setTotalPages(parseInt(ownerCount.data / 20));
                 }
-                fetchData();
+                fetchOwnerData();
             }
+            setPageLoading(false);
         }
+        setPageLoading(true);
         fetchData();
     };
 
@@ -144,12 +148,7 @@ export default function OwnerList() {
     const Owner = (props) => (
         <tr>
             <td>
-                <Link
-                    to={
-                        "/owners/edit/" +
-                        (hasResult ? props.owner.ownerId : props.owner._id)
-                    }
-                >
+                <Link to={"/owners/edit/" + props.owner._id}>
                     {props.owner.ownerName}
                 </Link>
             </td>
@@ -195,11 +194,7 @@ export default function OwnerList() {
             );
         } else {
             return owners.map(function (owner, index) {
-                const replace_obj = {};
-
-                return (
-                    <Owner owner={{ ...owner, ...replace_obj }} key={index} />
-                );
+                return <Owner owner={owner} key={index} />;
             });
         }
     };
@@ -223,8 +218,8 @@ export default function OwnerList() {
                                         <option value="ownerName">
                                             Owner Name
                                         </option>
-                                        <option value="ownerCity">
-                                            Owner City
+                                        <option value="ownerState">
+                                            Owner State
                                         </option>
                                     </Form.Control>
                                 </Col>
@@ -238,6 +233,7 @@ export default function OwnerList() {
 
                                 <Col md="3" className="pl-0">
                                     <Button
+                                        type="submit"
                                         variant="outline-info"
                                         className="float-left px-2"
                                         disabled={isSearching}
@@ -258,7 +254,10 @@ export default function OwnerList() {
                         </Form>
                     </Col>
                     <Col className="px-0">
-                        {totalPages > 1 && !hasResult && pagination()}
+                        {totalPages > 1 &&
+                            !hasResult &&
+                            !hasSearchError &&
+                            pagination()}
                     </Col>
                 </Row>
 

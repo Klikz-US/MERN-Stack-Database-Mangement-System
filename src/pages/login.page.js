@@ -67,6 +67,7 @@ export default function AccountLogin() {
                                     </Form.Group>
 
                                     <Button
+                                        type="submit"
                                         variant="outline-info"
                                         onClick={handleLogin}
                                         disabled={loginLoading}

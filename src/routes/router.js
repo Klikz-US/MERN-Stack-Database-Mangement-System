@@ -8,14 +8,15 @@ import PublicRoute from "../routes/public.route";
 import Footer from "../utils/footer.util";
 import Dashboard from "../pages/dashboard.page";
 import PetList from "../pages/pet-list.page";
-import PetEdit from "../pages/pet-update.page";
+import PetEdit from "../pages/pet-edit.page";
 import PetRegister from "../pages/pet-register.page";
 import OwnerList from "../pages/owner-list.page";
-import OwnerEdit from "../pages/owner-update.page";
+import OwnerEdit from "../pages/owner-edit.page";
 import OwnerRegister from "../pages/owner-register.page";
 import UserList from "../pages/user-list.page";
 import UserRegister from "../pages/user-register.page";
 import UserEdit from "../pages/user-edit.page";
+import Setting from "../pages/setting.page";
 import Report from "../pages/report.page";
 import AccountLogin from "../pages/login.page";
 
@@ -97,6 +98,13 @@ export default function STLRouter() {
                             component={UserEdit}
                             isAuthenticated={isAuthenticated}
                             isAdmin={isAdmin}
+                        />
+
+                        <PrivateRoute
+                            path="/setting"
+                            exact
+                            component={Setting}
+                            isAuthenticated={isAuthenticated}
                         />
 
                         <PrivateRoute

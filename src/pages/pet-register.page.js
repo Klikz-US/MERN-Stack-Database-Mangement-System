@@ -68,6 +68,7 @@ export default class RegisterPet extends Component {
         this.state = {
             petPhoto: undefined,
             petPhotoPreview: undefined,
+            error: "",
         };
     }
 
@@ -118,7 +119,9 @@ export default class RegisterPet extends Component {
                 }
             })
             .catch((err) => {
-                console.log(err);
+                this.setState({
+                    error: err.response.data,
+                });
             });
     }
 
@@ -1007,6 +1010,11 @@ export default class RegisterPet extends Component {
                                         </Button>
                                     </Col>
                                 </Row>
+                                {this.state.error !== "" && (
+                                    <Form.Text className="text-danger float-right pr-5">
+                                        {this.state.error}
+                                    </Form.Text>
+                                )}
                             </Container>
                         </Form>
                     )}

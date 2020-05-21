@@ -1,20 +1,23 @@
-const mongoose = require("mongoose");
+const mongoose = require("..//services/mongoose").mongoose;
 const Schema = mongoose.Schema;
 
-let photoSchema = new Schema(
+let PhotoModel = new Schema(
     {
         petMicrochip: {
             type: String,
             required: true,
             index: true,
+            trim: true,
         },
         petPhotoName: {
             type: String,
             default: "",
+            trim: true,
         },
         petPhotoData: {
             type: String,
             default: "",
+            trim: true,
         },
     },
     {
@@ -25,4 +28,4 @@ let photoSchema = new Schema(
         },
     }
 );
-module.exports = mongoose.model("photoSchema", photoSchema);
+module.exports = mongoose.model("PhotoModel", PhotoModel);

@@ -6,10 +6,10 @@ export const userGetListService = async () => {
     } catch (err) {
         return {
             error: true,
-            errMsg: err.message
+            errMsg: err.message,
         };
     }
-}
+};
 
 export const userGetService = async (_id) => {
     try {
@@ -17,10 +17,10 @@ export const userGetService = async (_id) => {
     } catch (err) {
         return {
             error: true,
-            errMsg: err.message
+            errMsg: err.message,
         };
     }
-}
+};
 
 export const userRegisterService = async (user) => {
     try {
@@ -28,10 +28,10 @@ export const userRegisterService = async (user) => {
     } catch (err) {
         return {
             error: true,
-            errMsg: err.message
+            errMsg: err.message,
         };
     }
-}
+};
 
 export const userDeleteService = async (_id) => {
     try {
@@ -39,18 +39,21 @@ export const userDeleteService = async (_id) => {
     } catch (err) {
         return {
             error: true,
-            errMsg: err.message
+            errMsg: err.message,
         };
     }
-}
+};
 
 export const userUpdateService = async (id, user) => {
     try {
-        return await axios.patch(`${window.$server_url}/users/update/${id}`, user);
+        return await axios.patch(
+            `${window.$server_url}/users/edit/${id}`,
+            user
+        );
     } catch (err) {
         return {
             error: true,
-            errMsg: err.message
+            errMsg: err.message,
         };
     }
-}
+};

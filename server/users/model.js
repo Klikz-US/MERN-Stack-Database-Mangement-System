@@ -1,31 +1,36 @@
-const mongoose = require("mongoose");
+const mongoose = require("..//services/mongoose").mongoose;
 const Schema = mongoose.Schema;
 
-let userSchema = new Schema(
+const UserModel = new Schema(
     {
         role: {
             type: String,
             default: "vet",
             required: true,
+            trim: true,
         },
         email: {
             type: String,
             default: "",
             required: true,
+            trim: true,
         },
         phone: {
             type: String,
             default: "",
+            trim: true,
         },
         password: {
             type: String,
             default: "",
             required: true,
+            trim: true,
         },
         name: {
             type: String,
             default: "",
             required: true,
+            trim: true,
         },
         isAdmin: {
             type: Boolean,
@@ -41,4 +46,5 @@ let userSchema = new Schema(
         },
     }
 );
-module.exports = mongoose.model("userSchema", userSchema);
+
+module.exports = mongoose.model("UserModel", UserModel);

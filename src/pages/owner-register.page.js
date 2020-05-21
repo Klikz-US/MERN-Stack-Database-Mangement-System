@@ -43,6 +43,10 @@ export default class RegisterOwner extends Component {
 
         this.onClickSubmit = this.onClickSubmit.bind(this);
         this.onClickCancel = this.onClickCancel.bind(this);
+
+        this.state = {
+            error: "",
+        };
     }
 
     onClickSubmit(values) {
@@ -53,7 +57,9 @@ export default class RegisterOwner extends Component {
                 this.props.history.push("/owners");
             })
             .catch((err) => {
-                console.log(err);
+                this.setState({
+                    error: err.response.data,
+                });
             });
     }
 
@@ -587,6 +593,11 @@ export default class RegisterOwner extends Component {
                                         </Button>
                                     </Col>
                                 </Row>
+                                {this.state.error !== "" && (
+                                    <Form.Text className="text-danger float-right pr-5">
+                                        {this.state.error}
+                                    </Form.Text>
+                                )}
                             </Container>
                         </Form>
                     )}

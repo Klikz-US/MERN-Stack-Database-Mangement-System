@@ -138,35 +138,54 @@ export default class RegisterPet extends Component {
     };
 
     onClickSubmit(values) {
+        let photoPath = "";
+        if (this.state.petPhoto !== undefined) {
+            photoPath =
+                "/uploads/photo/" +
+                values.microchip +
+                "." +
+                this.state.petPhoto.name.split(".")[
+                    this.state.petPhoto.name.split(".").length - 1
+                ];
+        }
+
         // Update Pet
-        axios.patch(window.$server_url + "/pets/update", values).then((res) => {
-            if (this.state.petPhoto !== undefined) {
-                // Upload Pet's Photo
-                let photo_origin_name = this.state.petPhoto.name;
-                let petPhotoName =
-                    values.microchip +
-                    "." +
-                    photo_origin_name.split(".")[
-                        photo_origin_name.split(".").length - 1
-                    ];
+        axios
+            .patch(
+                window.$server_url + "/pets/edit/" + this.props.match.params.id,
+                {
+                    ...values,
+                    ...{ photoPath: photoPath },
+                }
+            )
+            .then((res) => {
+                if (this.state.petPhoto !== undefined) {
+                    // Upload Pet's Photo
+                    let photo_origin_name = this.state.petPhoto.name;
+                    let petPhotoName =
+                        values.microchip +
+                        "." +
+                        photo_origin_name.split(".")[
+                            photo_origin_name.split(".").length - 1
+                        ];
 
-                const photoData = new FormData();
-                photoData.append("petMicrochip", values.microchip);
-                photoData.append("petPhotoName", petPhotoName);
-                photoData.append("petPhotoData", this.state.petPhoto);
+                    const photoData = new FormData();
+                    photoData.append("petMicrochip", values.microchip);
+                    photoData.append("petPhotoName", petPhotoName);
+                    photoData.append("petPhotoData", this.state.petPhoto);
 
-                axios
-                    .post(window.$server_url + "/photos/add", photoData)
-                    .then((res) => {
-                        this.props.history.push("/pets");
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            } else {
-                this.props.history.push("/pets");
-            }
-        });
+                    axios
+                        .post(window.$server_url + "/photos/add", photoData)
+                        .then((res) => {
+                            this.props.history.push("/pets");
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                } else {
+                    this.props.history.push("/pets");
+                }
+            });
     }
 
     onClickCancel(e) {

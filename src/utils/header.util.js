@@ -18,8 +18,6 @@ export default function Navigation() {
 
     const { isAdmin } = auth_obj.user;
 
-    const { userId } = auth_obj.user;
-
     const handleLogout = () => {
         dispatch(userLogoutAsync());
     };
@@ -109,10 +107,7 @@ export default function Navigation() {
                         </Nav>
 
                         <Nav className="ml-auto">
-                            <Link
-                                to={`/users/edit/${userId}`}
-                                className="d-block"
-                            >
+                            <Link to="/setting" className="d-block">
                                 <Button className="px-2" variant="info">
                                     <FiSettings
                                         size={24}

@@ -48,7 +48,7 @@ export default function UserList() {
             if (result.error) {
                 dispatch(userLogoutAsync());
             } else {
-                setUsers(result.data.userList);
+                setUsers(result.data);
             }
             setPageLoading(false);
         }
@@ -96,7 +96,10 @@ export default function UserList() {
                     <>
                         <span onClick={() => handleDelete(props.user._id)}>
                             {" "}
-                            <FaTrashAlt className="text-danger mx-1" />
+                            <FaTrashAlt
+                                style={{ cursor: "pointer" }}
+                                className="text-danger mx-1"
+                            />
                         </span>
                     </>
                 )}

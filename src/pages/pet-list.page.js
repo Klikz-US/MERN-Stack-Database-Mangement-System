@@ -18,7 +18,7 @@ import {
 } from "./../services/pet.service";
 import { verifyTokenAsync } from "../actions/auth-async.action";
 import { setAuthToken } from "../services/auth.service";
-import { searchService } from "../services/search.service";
+import { petSearchService } from "../services/search.service";
 import { useFormInput } from "../utils/form-input.util";
 import { useFormCheck } from "../utils/form-check.util";
 import Pagination from "../utils/pagination.util";
@@ -43,7 +43,6 @@ export default function PetList() {
     /* ----------------------- */
 
     const [pets, setPets] = useState([]);
-    const [petsDataBackup, setPetsDataBackup] = useState(pets);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageLoading, setPageLoading] = useState(true);
@@ -58,7 +57,6 @@ export default function PetList() {
         async function fetchData() {
             const petList = await petGetListService(activePage);
             if (!petList.error) {
-                setPetsDataBackup(petList.data);
                 setPets(petList.data);
             }
 
@@ -66,23 +64,25 @@ export default function PetList() {
             if (!petCount.error) setTotalPages(parseInt(petCount.data / 20));
             setPageLoading(false);
         }
-        setPageLoading(true);
-        fetchData();
-    }, [dispatch, activePage]);
+        if (!hasResult) {
+            setPageLoading(true);
+            fetchData();
+        }
+    }, [dispatch, activePage, hasResult]);
 
     const handleSearch = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
 
-        if (searchValue.value !== "") {
+        if (searchValue.value.trim() !== "") {
             async function fetchData() {
                 setIsSearching(true);
 
                 const searchReq = {
                     field: searchCategory.selected,
-                    value: searchValue.value,
+                    value: searchValue.value.trim(),
                 };
 
-                const searchResult = await searchService(searchReq);
+                const searchResult = await petSearchService(searchReq);
                 if (searchResult.error) {
                     setHasSearchError(true);
                     setHasResult(false);
@@ -102,30 +102,34 @@ export default function PetList() {
         e.preventDefault();
 
         setHasSearchError(false);
-        setPets(petsDataBackup);
         setHasResult(false);
     };
 
-    const handleDelete = (microchip) => {
+    const handleDelete = (_id) => {
         async function fetchData() {
-            const result = await petDeleteService(microchip);
+            const result = await petDeleteService(_id);
             if (result.error) {
                 console.log(result.errMsg);
             } else {
-                async function fetchData() {
+                async function fetchPetData() {
                     const petList = await petGetListService(activePage);
                     if (!petList.error) {
-                        setPetsDataBackup(petList.data);
-                        setPets(petList.data);
+                        if (hasResult) {
+                            handleSearch();
+                        } else {
+                            setPets(petList.data);
+                        }
                     }
 
                     const petCount = await petGetCountService();
                     if (!petCount.error)
                         setTotalPages(parseInt(petCount.data / 20));
                 }
-                fetchData();
+                fetchPetData();
             }
+            setPageLoading(false);
         }
+        setPageLoading(true);
         fetchData();
     };
 
@@ -170,7 +174,7 @@ export default function PetList() {
     const Pet = (props) => (
         <tr style={{ height: "70px" }}>
             <td>
-                <Link to={"/pets/edit/" + props.pet.microchip}>
+                <Link to={"/pets/edit/" + props.pet._id}>
                     {props.pet.microchip}
                 </Link>
             </td>
@@ -210,7 +214,7 @@ export default function PetList() {
             <td className="text-center pt-3">
                 <span
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleDelete(props.pet.microchip)}
+                    onClick={() => handleDelete(props.pet._id)}
                 >
                     {" "}
                     <FaTrashAlt className="text-danger mx-1" />
@@ -240,9 +244,7 @@ export default function PetList() {
             );
         } else {
             return pets.map(function (pet, index) {
-                const replace_obj = {};
-
-                return <Pet pet={{ ...pet, ...replace_obj }} key={index} />;
+                return <Pet pet={pet} key={index} />;
             });
         }
     };
@@ -274,12 +276,6 @@ export default function PetList() {
                                         <option value="ownerName">
                                             Owner Name
                                         </option>
-                                        <option value="petBreed">
-                                            Pet Breed
-                                        </option>
-                                        <option value="implanted">
-                                            Implanted Company
-                                        </option>
                                     </Form.Control>
                                 </Col>
 
@@ -292,6 +288,7 @@ export default function PetList() {
 
                                 <Col md="3" className="pl-0">
                                     <Button
+                                        type="submit"
                                         variant="outline-info"
                                         className="float-left px-2"
                                         disabled={isSearching}
@@ -312,7 +309,10 @@ export default function PetList() {
                         </Form>
                     </Col>
                     <Col className="px-0">
-                        {totalPages > 1 && !hasResult && pagination()}
+                        {totalPages > 1 &&
+                            !hasResult &&
+                            !hasSearchError &&
+                            pagination()}
                     </Col>
                 </Row>
 
